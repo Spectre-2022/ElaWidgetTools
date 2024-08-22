@@ -9,6 +9,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 配置install路径
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/install)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
+
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)

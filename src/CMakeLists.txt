@@ -85,4 +85,20 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 )
 endif()
 
+
+set(export_headers
+    ${CMAKE_CURRENT_LIST_DIR}/include/stdafx.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaDoubleSpinBox.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaApplication.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/singleton.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaMessageButton.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaMessageBar.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/Def.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaTheme.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaLineEdit.h
+)
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${export_headers}")
+
+include(${CMAKE_SOURCE_DIR}/cmakefiles/installDir.cmake)
+
 message(${CMAKE_INSTALL_PREFIX})

@@ -1,0 +1,12 @@
+#@NOTE:Debug模式下生成dll
+install(TARGETS ${PROJECT_NAME}
+    CONFIGURATIONS Debug
+    DESTINATION ${PROJECT_NAME}/Debug/lib/
+    PUBLIC_HEADER DESTINATION ${PROJECT_NAME}/Debug/include/
+)
+#@NOTE:Release模式下生成dll
+install(TARGETS ${PROJECT_NAME}
+    CONFIGURATIONS Release
+    DESTINATION ${PROJECT_NAME}/Release/lib/
+    PUBLIC_HEADER DESTINATION ${PROJECT_NAME}/Release/include/
+)
