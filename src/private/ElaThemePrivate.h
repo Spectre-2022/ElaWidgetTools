@@ -18,8 +18,8 @@ public:
 
 private:
     ElaThemeType::ThemeMode _themeMode{ElaThemeType::Light};
-    QColor _lightThemeColorList[189];
-    QColor _darkThemeColorList[189];
+    QColor _lightThemeColorList[193];
+    QColor _darkThemeColorList[193];
     void _initThemeColor();
 };
 

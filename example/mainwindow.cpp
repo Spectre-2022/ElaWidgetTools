@@ -21,7 +21,7 @@
 #include "ElaText.h"
 #include "ElaToolBar.h"
 #include "ElaToolButton.h"
-#include "ElaWidget.h"
+#include "T_About.h"
 #include "T_BaseComponents.h"
 #include "T_Card.h"
 #include "T_View.h"
@@ -31,8 +31,8 @@
 #include "ExamplePage/T_Home.h"
 #include "ExamplePage/T_Icon.h"
 #include "ExamplePage/T_LogWidget.h"
+#include "ExamplePage/T_Navigation.h"
 #include "ExamplePage/T_Popup.h"
-#include "ExamplePage/T_TabWidget.h"
 #include "ExamplePage/T_UpdateWidget.h"
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent)
@@ -208,7 +208,7 @@ void MainWindow::initContent()
 #endif
     _iconPage = new T_Icon(this);
     _baseComponentsPage = new T_BaseComponents(this);
-    _tabWidgetPage = new T_TabWidget(this);
+    _navigationPage = new T_Navigation(this);
     _popupPage = new T_Popup(this);
     _cardPage = new T_Card(this);
     _viewPage = new T_View(this);
@@ -241,7 +241,7 @@ void MainWindow::initContent()
     addPageNode("ElaView", _viewPage, ElaIconType::CameraViewfinder);
     addPageNode("ElaGraphics", view, 9, ElaIconType::KeySkeleton);
     addPageNode("ElaCard", _cardPage, ElaIconType::Cards);
-    addPageNode("ElaTabWidget", _tabWidgetPage, ElaIconType::Table);
+    addPageNode("ElaNavigation", _navigationPage, ElaIconType::Table);
     addPageNode("ElaPopup", _popupPage, ElaIconType::Envelope);
     addPageNode("ElaIcon", _iconPage, 99, ElaIconType::FontAwesome);
     addExpanderNode("TEST4", testKey_2, ElaIconType::Acorn);
@@ -261,13 +261,14 @@ void MainWindow::initContent()
     addExpanderNode("TEST17", testKey_1, ElaIconType::Acorn);
 
     addFooterNode("About", nullptr, _aboutKey, 0, ElaIconType::User);
-    ElaWidget* widget = new ElaWidget();
-    widget->setWindowModality(Qt::ApplicationModal);
-    widget->hide();
+    T_About* aboutPage = new T_About();
+    aboutPage->hide();
     connect(this, &ElaWindow::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey) {
         if (_aboutKey == nodeKey)
         {
-            widget->show();
+            aboutPage->setFixedSize(400, 400);
+            aboutPage->moveToCenter();
+            aboutPage->show();
         }
     });
     addFooterNode("Setting", new QWidget(this), _settingKey, 0, ElaIconType::GearComplex);
