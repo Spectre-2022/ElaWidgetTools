@@ -29,6 +29,14 @@
 [download-badge]: https://img.shields.io/github/downloads/Liniyous/ElaWidgetTools/total.svg "Download status"
 [download-latest]: https://img.shields.io/github/downloads/Liniyous/ElaWidgetTools/latest/total.svg "latest status"
 
+## 主界面预览
+<div align=center>
+  <img src="doc/preview/ElaWidgetTools_Light.png">
+</div>
+<div align=center>
+  <img src="doc/preview/ElaWidgetTools_Dark.png">
+</div> 
+
 ## 支持的组件
 
 |目录|说明|备注|
@@ -39,6 +47,7 @@
 |ElaBreadcrumbBar|面包屑组件|自动处理点击事件|
 |ElaCheckBox|勾选框||
 |ElaComboBox|下拉框||
+|ElaColorDialog|颜色选择器||
 |ElaMultiSelectComboBox|多选下拉框||
 |ElaContentDialog|带遮罩的对话框||
 |ElaDockWidget|停靠窗口||

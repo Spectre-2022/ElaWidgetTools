@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 
 #include "ElaAppBar.h"
+#include "ElaApplication.h"
 #include "ElaCentralStackedWidget.h"
 #include "ElaEventBus.h"
 #include "ElaMenu.h"
@@ -31,6 +32,8 @@ ElaWindow::ElaWindow(QWidget* parent)
 {
     Q_D(ElaWindow);
     d->q_ptr = this;
+    d->_pIsEnableMica = false;
+    d->_pMicaImagePath = ":/Resource/Image/MicaBase.png";
     setProperty("ElaBaseClassName", "ElaWindow");
     resize(1020, 680); // 默认宽高
 
@@ -97,10 +100,129 @@ ElaWindow::ElaWindow(QWidget* parent)
         palette.setBrush(QPalette::Window, *d->_windowLinearGradient);
         this->setPalette(palette);
     });
+
+    d->_themeMode = eTheme->getThemeMode();
+    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) { d->_themeMode = themeMode; });
 }
 
 ElaWindow::~ElaWindow()
 {
+}
+
+void ElaWindow::setIsStayTop(bool isStayTop)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setIsStayTop(isStayTop);
+    Q_EMIT pIsStayTopChanged();
+}
+
+bool ElaWindow::getIsStayTop() const
+{
+    return d_ptr->_appBar->getIsStayTop();
+}
+
+void ElaWindow::setIsFixedSize(bool isFixedSize)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setIsFixedSize(isFixedSize);
+    Q_EMIT pIsFixedSizeChanged();
+}
+
+bool ElaWindow::getIsFixedSize() const
+{
+    return d_ptr->_appBar->getIsFixedSize();
+}
+
+void ElaWindow::setIsDefaultClosed(bool isDefaultClosed)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setIsDefaultClosed(isDefaultClosed);
+    Q_EMIT pIsDefaultClosedChanged();
+}
+
+bool ElaWindow::getIsDefaultClosed() const
+{
+    return d_ptr->_appBar->getIsDefaultClosed();
+}
+
+void ElaWindow::setAppBarHeight(int appBarHeight)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setAppBarHeight(appBarHeight);
+    Q_EMIT pAppBarHeightChanged();
+}
+
+int ElaWindow::getAppBarHeight() const
+{
+    Q_D(const ElaWindow);
+    return d->_appBar->getAppBarHeight();
+}
+
+void ElaWindow::setCustomWidget(QWidget* widget)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setCustomWidget(widget);
+    Q_EMIT pCustomWidgetChanged();
+}
+
+QWidget* ElaWindow::getCustomWidget() const
+{
+    Q_D(const ElaWindow);
+    return d->_appBar->getCustomWidget();
+}
+
+void ElaWindow::setCustomWidgetMaximumWidth(int width)
+{
+    Q_D(ElaWindow);
+    d->_appBar->setCustomWidgetMaximumWidth(width);
+    Q_EMIT pCustomWidgetMaximumWidthChanged();
+}
+
+int ElaWindow::getCustomWidgetMaximumWidth() const
+{
+    Q_D(const ElaWindow);
+    return d->_appBar->getCustomWidgetMaximumWidth();
+}
+
+void ElaWindow::setIsCentralStackedWidgetTransparent(bool isTransparent)
+{
+    Q_D(ElaWindow);
+    d->_centerStackedWidget->setIsTransparent(isTransparent);
+}
+
+bool ElaWindow::getIsCentralStackedWidgetTransparent() const
+{
+    Q_D(const ElaWindow);
+    return d->_centerStackedWidget->getIsTransparent();
+}
+
+void ElaWindow::setIsEnableMica(bool isEnable)
+{
+    Q_D(ElaWindow);
+    d->_pIsEnableMica = isEnable;
+    if (isEnable)
+    {
+        d->_initMicaBaseImage(QImage(d->_pMicaImagePath));
+    }
+    Q_EMIT pIsEnableMicaChanged();
+}
+
+bool ElaWindow::getIsEnableMica() const
+{
+    Q_D(const ElaWindow);
+    return d->_pIsEnableMica;
+}
+
+void ElaWindow::setMicaImagePath(QString micaImagePath)
+{
+    Q_D(ElaWindow);
+    d->_pMicaImagePath = micaImagePath;
+}
+
+QString ElaWindow::getMicaImagePath() const
+{
+    Q_D(const ElaWindow);
+    return d->_pMicaImagePath;
 }
 
 void ElaWindow::moveToCenter()
@@ -122,33 +244,12 @@ void ElaWindow::setIsNavigationBarEnable(bool isVisible)
     Q_D(ElaWindow);
     d->_isNavigationEnable = isVisible;
     d->_navigationBar->setVisible(isVisible);
+    d->_centerLayout->setContentsMargins(isVisible ? d->_contentsMargins : 0, 0, 0, 0);
 }
 
 bool ElaWindow::getIsNavigationBarEnable() const
 {
     return d_ptr->_isNavigationEnable;
-}
-
-void ElaWindow::setIsStayTop(bool isStayTop)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setIsStayTop(isStayTop);
-}
-
-bool ElaWindow::getIsStayTop() const
-{
-    return d_ptr->_appBar->getIsStayTop();
-}
-
-void ElaWindow::setIsFixedSize(bool isFixedSize)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setIsFixedSize(isFixedSize);
-}
-
-bool ElaWindow::getIsFixedSize() const
-{
-    return d_ptr->_appBar->getIsFixedSize();
 }
 
 void ElaWindow::setUserInfoCardVisible(bool isVisible)
@@ -258,57 +359,26 @@ ElaAppBarType::ButtonFlags ElaWindow::getWindowButtonFlags() const
     return d_ptr->_appBar->getWindowButtonFlags();
 }
 
-void ElaWindow::setCustomWidget(QWidget* widget)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setCustomWidget(widget);
-}
-
-QWidget* ElaWindow::getCustomWidget() const
-{
-    Q_D(const ElaWindow);
-    return d->_appBar->getCustomWidget();
-}
-
-void ElaWindow::setAppBarHeight(int appBarHeight)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setAppBarHeight(appBarHeight);
-}
-
-int ElaWindow::getAppBarHeight() const
-{
-    Q_D(const ElaWindow);
-    return d->_appBar->getAppBarHeight();
-}
-
-void ElaWindow::setCustomWidgetMaximumWidth(int width)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setCustomWidgetMaximumWidth(width);
-}
-
-int ElaWindow::getCustomWidgetMaximumWidth() const
-{
-    Q_D(const ElaWindow);
-    return d->_appBar->getCustomWidgetMaximumWidth();
-}
-
-void ElaWindow::setIsDefaultClosed(bool isDefaultClosed)
-{
-    Q_D(ElaWindow);
-    d->_appBar->setIsDefaultClosed(isDefaultClosed);
-}
-
-bool ElaWindow::getIsDefaultClosed() const
-{
-    return d_ptr->_appBar->getIsDefaultClosed();
-}
-
 void ElaWindow::closeWindow()
 {
     Q_D(ElaWindow);
+    eApp->setIsApplicationClosed(true);
     d->_appBar->closeWindow();
+}
+
+void ElaWindow::moveEvent(QMoveEvent* event)
+{
+    Q_D(ElaWindow);
+    d->_updateMica();
+    QMainWindow::moveEvent(event);
+}
+
+void ElaWindow::resizeEvent(QResizeEvent* event)
+{
+    Q_D(ElaWindow);
+    d->_updateMica();
+    d->_windowLinearGradient->setFinalStop(width(), height());
+    QWidget::resizeEvent(event);
 }
 
 bool ElaWindow::eventFilter(QObject* watched, QEvent* event)
@@ -327,13 +397,6 @@ bool ElaWindow::eventFilter(QObject* watched, QEvent* event)
     }
     }
     return QMainWindow::eventFilter(watched, event);
-}
-
-void ElaWindow::resizeEvent(QResizeEvent* event)
-{
-    Q_D(ElaWindow);
-    d->_windowLinearGradient->setFinalStop(width(), height());
-    QWidget::resizeEvent(event);
 }
 
 QMenu* ElaWindow::createPopupMenu()

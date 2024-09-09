@@ -17,8 +17,11 @@ class T_BaseComponents : public T_BasePage
 {
     Q_OBJECT
 public:
-    T_BaseComponents(QWidget* parent = nullptr);
+    Q_INVOKABLE explicit T_BaseComponents(QWidget* parent = nullptr);
     ~T_BaseComponents();
+
+protected:
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 
 private:
     ElaToggleSwitch* _toggleSwitch{nullptr};

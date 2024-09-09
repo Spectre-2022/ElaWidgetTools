@@ -12,8 +12,10 @@ ElaThemePrivate::~ElaThemePrivate()
 void ElaThemePrivate::_initThemeColor()
 {
     //ElaAcrylicUrlCard
-    _lightThemeColorList[ElaThemeType::AcrylicUrlCardBorder] = QColor(0xBE, 0xBA, 0xBE);
-    _darkThemeColorList[ElaThemeType::AcrylicUrlCardBorder] = QColor(0x52, 0x50, 0x52);
+    _lightThemeColorList[ElaThemeType::AcrylicUrlCardBorder] = QColor(0xEA, 0xEA, 0xED);
+    _darkThemeColorList[ElaThemeType::AcrylicUrlCardBorder] = QColor(0x3D, 0x3E, 0x3E);
+    _lightThemeColorList[ElaThemeType::AcrylicUrlCardHoverBorder] = QColor(0xC9, 0xC9, 0xCC);
+    _darkThemeColorList[ElaThemeType::AcrylicUrlCardHoverBorder] = QColor(0x4D, 0x4D, 0x4D);
     _lightThemeColorList[ElaThemeType::AcrylicUrlCardBase] = QColor(0xFB, 0xFB, 0xFD);
     _darkThemeColorList[ElaThemeType::AcrylicUrlCardBase] = QColor(0x04, 0x09, 0x11);
     _lightThemeColorList[ElaThemeType::AcrylicUrlCardHover] = QColor(0xE9, 0xE9, 0xF0);
@@ -44,6 +46,16 @@ void ElaThemePrivate::_initThemeColor()
     _darkThemeColorList[ElaThemeType::CheckBoxCheckedHover] = QColor(0x42, 0x8B, 0xC3);
     _lightThemeColorList[ElaThemeType::CheckBoxCheckedPress] = QColor(0x00, 0x85, 0xEA);
     _darkThemeColorList[ElaThemeType::CheckBoxCheckedPress] = QColor(0x3A, 0x7B, 0xAC);
+
+    // ElaColorDialog
+    _lightThemeColorList[ElaThemeType::ColorDialogPickerBorder] = QColor(0xF0, 0xF0, 0xF0);
+    _darkThemeColorList[ElaThemeType::ColorDialogPickerBorder] = QColor(0x4C, 0x4C, 0x4C);
+    _lightThemeColorList[ElaThemeType::ColorDialogDisplayBorder] = QColor(0xA6, 0xA6, 0xA6);
+    _darkThemeColorList[ElaThemeType::ColorDialogDisplayBorder] = QColor(0x4C, 0x4C, 0x4C);
+    _lightThemeColorList[ElaThemeType::ColorDialogBase] = Qt::white;
+    _darkThemeColorList[ElaThemeType::ColorDialogBase] = QColor(0x2B, 0x2B, 0x2B);
+    _lightThemeColorList[ElaThemeType::ColorDialogButtonAreaBase] = QColor(0xF3, 0xF3, 0xF3);
+    _darkThemeColorList[ElaThemeType::ColorDialogButtonAreaBase] = QColor(0x20, 0x20, 0x20);
 
     //ElaComboBox ElaMultiComboBoxs
     _lightThemeColorList[ElaThemeType::ComboBoxMark] = QColor(0x0E, 0x6F, 0xC3);
@@ -462,8 +474,6 @@ void ElaThemePrivate::_initThemeColor()
     _darkThemeColorList[ElaThemeType::WindowTabBarSelected] = QColor(0x2D, 0x2D, 0x2D);
     _lightThemeColorList[ElaThemeType::WindowTabBarSeparator] = QColor(0x0E, 0x6F, 0xC3);
     _darkThemeColorList[ElaThemeType::WindowTabBarSeparator] = QColor(0x4C, 0xA0, 0xE0);
-    _lightThemeColorList[ElaThemeType::WindowCentralStackBaseStart] = QColor(0xF9, 0xF9, 0xFC);
-    _darkThemeColorList[ElaThemeType::WindowCentralStackBaseStart] = QColor(0x24, 0x29, 0x2D);
-    _lightThemeColorList[ElaThemeType::WindowCentralStackBaseEnd] = QColor(0xFA, 0xF8, 0xFC);
-    _darkThemeColorList[ElaThemeType::WindowCentralStackBaseEnd] = QColor(0x2E, 0x26, 0x33);
+    _lightThemeColorList[ElaThemeType::WindowCentralStackBase] = QColor(0xF9, 0xF9, 0xF9, 120);
+    _darkThemeColorList[ElaThemeType::WindowCentralStackBase] = QColor(0x27, 0x27, 0x27, 100);
 }

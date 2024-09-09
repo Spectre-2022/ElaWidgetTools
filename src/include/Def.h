@@ -41,7 +41,8 @@ Q_ENUM_CREATE(ThemeMode)
 enum ThemeColor
 {
     AcrylicUrlCardBorder = 0x0000,
-    AcrylicUrlCardBase = 0x0001,
+    AcrylicUrlCardHoverBorder = 0x0001,
+    AcrylicUrlCardBase = 0x0002,
     AcrylicUrlCardHover,
     AcrylicUrlCardSubTitleText,
     BreadcrumbBarText,
@@ -54,6 +55,10 @@ enum ThemeColor
     CheckBoxCheckedBase,
     CheckBoxCheckedHover,
     CheckBoxCheckedPress,
+    ColorDialogPickerBorder,
+    ColorDialogDisplayBorder,
+    ColorDialogBase,
+    ColorDialogButtonAreaBase,
     ComboBoxMark,
     ComboBoxBorder,
     ComboBoxBase,
@@ -231,8 +236,7 @@ enum ThemeColor
     WindowTabBarHover,
     WindowTabBarSelected,
     WindowTabBarSeparator,
-    WindowCentralStackBaseStart,
-    WindowCentralStackBaseEnd,
+    WindowCentralStackBase,
 };
 Q_ENUM_CREATE(ThemeColor)
 Q_END_ENUM_CREATE(ElaThemeType)

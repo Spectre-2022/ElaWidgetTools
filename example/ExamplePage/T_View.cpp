@@ -7,6 +7,7 @@
 
 #include "ElaListView.h"
 #include "ElaPushButton.h"
+#include "ElaScrollBar.h"
 #include "ElaSlider.h"
 #include "ElaTableView.h"
 #include "ElaText.h"
@@ -17,8 +18,11 @@
 T_View::T_View(QWidget* parent)
     : T_BasePage(parent)
 {
+    // 预览窗口标题
+    setWindowTitle("ElaView");
+
     // 顶部元素
-    QVBoxLayout* topLayout = createTopLayout("一些常用的图表组件被放置于此，可在此界面体验其效果并按需添加进项目中");
+    createCustomWidget("一些常用的图表组件被放置于此，可在此界面体验其效果并按需添加进项目中");
 
     //ElaListView
     ElaText* listText = new ElaText("ElaListView", this);
@@ -27,11 +31,18 @@ T_View::T_View(QWidget* parent)
     _listView->setFixedHeight(450);
     // _listView->setAlternatingRowColors(true);
     _listView->setModel(new T_ListViewModel(this));
+    ElaScrollBar* listViewFloatScrollBar = new ElaScrollBar(_listView->verticalScrollBar(), _listView);
+    listViewFloatScrollBar->setIsAnimation(true);
+    QHBoxLayout* listViewLayout = new QHBoxLayout();
+    listViewLayout->setContentsMargins(0, 0, 10, 0);
+    listViewLayout->addWidget(_listView);
 
     //ElaTableView
     ElaText* tableText = new ElaText("ElaTableView", this);
     tableText->setTextPixelSize(18);
     _tableView = new ElaTableView(this);
+    // ElaScrollBar* tableViewFloatScrollBar = new ElaScrollBar(_tableView->verticalScrollBar(), _tableView);
+    // tableViewFloatScrollBar->setIsAnimation(true);
     QFont tableHeaderFont = _tableView->horizontalHeader()->font();
     tableHeaderFont.setPixelSize(16);
     _tableView->horizontalHeader()->setFont(tableHeaderFont);
@@ -51,11 +62,14 @@ T_View::T_View(QWidget* parent)
         _tableView->setColumnWidth(3, 150);
         _tableView->setColumnWidth(4, 60);
     });
+    QHBoxLayout* tableViewLayout = new QHBoxLayout();
+    tableViewLayout->setContentsMargins(0, 0, 10, 0);
+    tableViewLayout->addWidget(_tableView);
 
     // ElaTreeView
     T_TreeViewModel* treeModel = new T_TreeViewModel(this);
     QHBoxLayout* treeLayout = new QHBoxLayout();
-    treeLayout->setContentsMargins(0, 0, 0, 0);
+    treeLayout->setContentsMargins(0, 0, 10, 0);
     QWidget* treeSettingWidget = new QWidget(this);
     QVBoxLayout* treeSettingWidgetLayout = new QVBoxLayout(treeSettingWidget);
     treeSettingWidgetLayout->setContentsMargins(0, 0, 0, 0);
@@ -149,6 +163,8 @@ T_View::T_View(QWidget* parent)
     ElaText* treeText = new ElaText("ElaTreeView", this);
     treeText->setTextPixelSize(18);
     _treeView = new ElaTreeView(this);
+    ElaScrollBar* treeViewFloatScrollBar = new ElaScrollBar(_treeView->verticalScrollBar(), _treeView);
+    treeViewFloatScrollBar->setIsAnimation(true);
     QFont headerFont = _treeView->header()->font();
     headerFont.setPixelSize(16);
     _treeView->header()->setFont(headerFont);
@@ -161,15 +177,13 @@ T_View::T_View(QWidget* parent)
     centralWidget->setWindowTitle("ElaView");
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
     centerVLayout->setContentsMargins(0, 0, 0, 0);
-    centerVLayout->addLayout(topLayout);
-    centerVLayout->addSpacing(5);
     centerVLayout->addWidget(listText);
     centerVLayout->addSpacing(10);
-    centerVLayout->addWidget(_listView);
+    centerVLayout->addLayout(listViewLayout);
     centerVLayout->addSpacing(15);
     centerVLayout->addWidget(tableText);
     centerVLayout->addSpacing(10);
-    centerVLayout->addWidget(_tableView);
+    centerVLayout->addLayout(tableViewLayout);
     centerVLayout->addSpacing(15);
     centerVLayout->addWidget(treeText);
     centerVLayout->addSpacing(10);

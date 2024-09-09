@@ -12,7 +12,8 @@ public:
     ~T_BasePage();
 
 protected:
-    QVBoxLayout* createTopLayout(QString desText);
+    void createCustomWidget(QString desText);
+    virtual void paintEvent(QPaintEvent* event) override;
 };
 
 #endif // T_BASEPAGE_H

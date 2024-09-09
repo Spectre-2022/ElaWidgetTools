@@ -10,9 +10,6 @@
 #include "ElaContentDialog.h"
 #include "ElaDockWidget.h"
 #include "ElaEventBus.h"
-#include "ElaGraphicsItem.h"
-#include "ElaGraphicsScene.h"
-#include "ElaGraphicsView.h"
 #include "ElaLog.h"
 #include "ElaMenu.h"
 #include "ElaMenuBar.h"
@@ -24,6 +21,7 @@
 #include "T_About.h"
 #include "T_BaseComponents.h"
 #include "T_Card.h"
+#include "T_Graphics.h"
 #include "T_View.h"
 #ifdef Q_OS_WIN
 #include "ExamplePage/T_ElaScreen.h"
@@ -46,6 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
     initContent();
 
     // 拦截默认关闭事件
+    _closeDialog = new ElaContentDialog(this);
     this->setIsDefaultClosed(false);
     connect(this, &MainWindow::closeButtonClicked, this, &MainWindow::onCloseButtonClicked);
 
@@ -55,18 +54,20 @@ MainWindow::MainWindow(QWidget* parent)
 
 MainWindow::~MainWindow()
 {
+    delete this->_aboutPage;
 }
 
 void MainWindow::onCloseButtonClicked()
 {
-    ElaContentDialog dialog(this);
-    connect(&dialog, &ElaContentDialog::rightButtonClicked, this, &MainWindow::closeWindow);
-    connect(&dialog, &ElaContentDialog::middleButtonClicked, this, &MainWindow::showMinimized);
-    dialog.exec();
+    connect(_closeDialog, &ElaContentDialog::rightButtonClicked, this, &MainWindow::closeWindow);
+    connect(_closeDialog, &ElaContentDialog::middleButtonClicked, this, &MainWindow::showMinimized);
+    _closeDialog->exec();
 }
 
 void MainWindow::initWindow()
 {
+    // setIsEnableMica(true);
+    // setIsCentralStackedWidgetTransparent(true);
     setWindowIcon(QIcon(":/include/Image/Cirno.jpg"));
     resize(1200, 740);
     // ElaLog::getInstance()->initMessageLog(true);
@@ -208,26 +209,11 @@ void MainWindow::initContent()
 #endif
     _iconPage = new T_Icon(this);
     _baseComponentsPage = new T_BaseComponents(this);
+    _graphicsPage = new T_Graphics(this);
     _navigationPage = new T_Navigation(this);
     _popupPage = new T_Popup(this);
     _cardPage = new T_Card(this);
     _viewPage = new T_View(this);
-
-    // GraphicsView
-    ElaGraphicsScene* scene = new ElaGraphicsScene(this);
-    scene->setSceneRect(0, 0, 1500, 1500);
-    ElaGraphicsItem* item1 = new ElaGraphicsItem();
-    item1->setWidth(100);
-    item1->setHeight(100);
-    item1->setMaxLinkPortCount(100);
-    item1->setMaxLinkPortCount(1);
-    ElaGraphicsItem* item2 = new ElaGraphicsItem();
-    item2->setWidth(100);
-    item2->setHeight(100);
-    scene->addItem(item1);
-    scene->addItem(item2);
-    ElaGraphicsView* view = new ElaGraphicsView(scene);
-    view->setScene(scene);
 
     QString testKey_1;
     QString testKey_2;
@@ -239,7 +225,7 @@ void MainWindow::initContent()
     // navigation(elaScreenWidget->property("ElaPageKey").toString());
     addPageNode("ElaBaseComponents", _baseComponentsPage, ElaIconType::CabinetFiling);
     addPageNode("ElaView", _viewPage, ElaIconType::CameraViewfinder);
-    addPageNode("ElaGraphics", view, 9, ElaIconType::KeySkeleton);
+    addPageNode("ElaGraphics", _graphicsPage, 9, ElaIconType::KeySkeleton);
     addPageNode("ElaCard", _cardPage, ElaIconType::Cards);
     addPageNode("ElaNavigation", _navigationPage, ElaIconType::Table);
     addPageNode("ElaPopup", _popupPage, ElaIconType::Envelope);
@@ -261,14 +247,15 @@ void MainWindow::initContent()
     addExpanderNode("TEST17", testKey_1, ElaIconType::Acorn);
 
     addFooterNode("About", nullptr, _aboutKey, 0, ElaIconType::User);
-    T_About* aboutPage = new T_About();
-    aboutPage->hide();
+    _aboutPage = new T_About();
+
+    _aboutPage->hide();
     connect(this, &ElaWindow::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey) {
         if (_aboutKey == nodeKey)
         {
-            aboutPage->setFixedSize(400, 400);
-            aboutPage->moveToCenter();
-            aboutPage->show();
+            _aboutPage->setFixedSize(400, 400);
+            _aboutPage->moveToCenter();
+            _aboutPage->show();
         }
     });
     addFooterNode("Setting", new QWidget(this), _settingKey, 0, ElaIconType::GearComplex);
@@ -277,7 +264,7 @@ void MainWindow::initContent()
     connect(_homePage, &T_Home::elaScreenNavigation, this, [=]() { this->navigation(_elaScreenPage->property("ElaPageKey").toString()); });
 #endif
     connect(_homePage, &T_Home::elaBaseComponentNavigation, this, [=]() { this->navigation(_baseComponentsPage->property("ElaPageKey").toString()); });
-    connect(_homePage, &T_Home::elaSceneNavigation, this, [=]() { this->navigation(view->property("ElaPageKey").toString()); });
+    connect(_homePage, &T_Home::elaSceneNavigation, this, [=]() { this->navigation(_graphicsPage->property("ElaPageKey").toString()); });
     connect(_homePage, &T_Home::elaIconNavigation, this, [=]() { this->navigation(_iconPage->property("ElaPageKey").toString()); });
     connect(_homePage, &T_Home::elaCardNavigation, this, [=]() { this->navigation(_cardPage->property("ElaPageKey").toString()); });
     qDebug() << "已注册的事件列表" << ElaEventBus::getInstance()->getRegisteredEventsName();

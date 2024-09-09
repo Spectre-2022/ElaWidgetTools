@@ -1,13 +1,13 @@
 ﻿#ifndef T_HOME_H
 #define T_HOME_H
 
-#include "ElaScrollPage.h"
+#include "T_BasePage.h"
 class ElaMenu;
-class T_Home : public ElaScrollPage
+class T_Home : public T_BasePage
 {
     Q_OBJECT
 public:
-    explicit T_Home(QWidget* parent = nullptr);
+    Q_INVOKABLE explicit T_Home(QWidget* parent = nullptr);
     ~T_Home();
 Q_SIGNALS:
     Q_SIGNAL void elaScreenNavigation();

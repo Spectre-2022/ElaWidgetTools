@@ -23,17 +23,15 @@
 #include <QVBoxLayout>
 
 #include "Def.h"
-#include "ElaApplication.h"
 #include "ElaEventBus.h"
 #include "ElaIconButton.h"
 #include "ElaTheme.h"
 #include "private/ElaAppBarPrivate.h"
 Q_PROPERTY_CREATE_Q_CPP(ElaAppBar, bool, IsStayTop)
-Q_PROPERTY_CREATE_Q_CPP(ElaAppBar, bool, IsFixedSize)
 Q_PROPERTY_CREATE_Q_CPP(ElaAppBar, bool, IsDefaultClosed)
 Q_PROPERTY_CREATE_Q_CPP(ElaAppBar, bool, IsOnlyAllowMinAndClose)
 #ifdef Q_OS_WIN
-#if (QT_VERSION == QT_VERSION_CHECK(6, 5, 3) || QT_VERSION == QT_VERSION_CHECK(6, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
 [[maybe_unused]] static inline void setShadow(HWND hwnd)
 {
     const MARGINS shadow = {1, 0, 0, 0};
@@ -69,21 +67,15 @@ ElaAppBar::ElaAppBar(QWidget* parent)
     d->_pIsOnlyAllowMinAndClose = false;
     d->_pCustomWidget = nullptr;
     d->_pCustomWidgetMaximumWidth = 550;
-    d->_currentWinID = window()->winId();
 
     window()->installEventFilter(this);
 #ifdef Q_OS_WIN
-#if (QT_VERSION == QT_VERSION_CHECK(6, 5, 3) || QT_VERSION == QT_VERSION_CHECK(6, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
     window()->setWindowFlags((window()->windowFlags()) | Qt::WindowMinimizeButtonHint | Qt::FramelessWindowHint);
     setShadow((HWND)(window()->winId()));
 #endif
-    QGuiApplication::instance()->installNativeEventFilter(this);
 #else
-    window()->setWindowFlags((window()->windowFlags()) | Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
-    if (!d->_pIsFixedSize)
-    {
-        window()->setWindowFlag(Qt::WindowMaximizeButtonHint);
-    }
+    window()->setWindowFlags((window()->windowFlags()) | Qt::FramelessWindowHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 #endif
     setMouseTracking(true);
     setObjectName("ElaAppBar");
@@ -175,19 +167,17 @@ ElaAppBar::ElaAppBar(QWidget* parent)
 #ifdef Q_OS_WIN
     HWND hwnd = reinterpret_cast<HWND>(window()->winId());
     DWORD style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
-    if (d->_pIsFixedSize)
+    ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME);
+    for (int i = 0; i < qApp->screens().count(); ++i)
     {
-        //切换DPI处理
-        ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_THICKFRAME);
-        for (int i = 0; i < qApp->screens().count(); ++i)
-        {
-            connect(qApp->screens().at(i), &QScreen::logicalDotsPerInchChanged, this, [=] { SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_FRAMECHANGED); });
-        }
+        connect(qApp->screens().at(i), &QScreen::logicalDotsPerInchChanged, this, [=] {
+            if (d->_pIsFixedSize)
+            {
+                SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_FRAMECHANGED);
+            }
+        });
     }
-    else
-    {
-        ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME);
-    }
+
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 
     //主屏幕变更处理
@@ -201,9 +191,6 @@ ElaAppBar::ElaAppBar(QWidget* parent)
 
 ElaAppBar::~ElaAppBar()
 {
-#ifdef Q_OS_WIN
-    QGuiApplication::instance()->removeNativeEventFilter(this);
-#endif
 }
 
 void ElaAppBar::setAppBarHeight(int height)
@@ -235,12 +222,8 @@ void ElaAppBar::setCustomWidget(QWidget* widget)
     if (d->_pCustomWidget)
     {
         d->_mainLayout->removeWidget(d->_pCustomWidget);
-        d->_mainLayout->insertWidget(7, widget);
     }
-    else
-    {
-        d->_mainLayout->insertWidget(7, widget);
-    }
+    d->_mainLayout->insertWidget(7, widget);
     d->_pCustomWidget = widget;
     Q_EMIT pCustomWidgetChanged();
 }
@@ -266,6 +249,39 @@ int ElaAppBar::getCustomWidgetMaximumWidth() const
 {
     Q_D(const ElaAppBar);
     return d->_pCustomWidgetMaximumWidth;
+}
+
+void ElaAppBar::setIsFixedSize(bool isFixedSize)
+{
+    Q_D(ElaAppBar);
+    d->_pIsFixedSize = isFixedSize;
+#ifdef Q_OS_WIN
+    HWND hwnd = reinterpret_cast<HWND>(window()->winId());
+    DWORD style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
+    if (d->_pIsFixedSize)
+    {
+        //切换DPI处理
+        style &= ~WS_THICKFRAME;
+        ::SetWindowLongPtr(hwnd, GWL_STYLE, style);
+    }
+    else
+    {
+        ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME);
+    }
+#else
+    window()->setWindowFlags((window()->windowFlags()) | Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    if (!isFixedSize)
+    {
+        window()->setWindowFlag(Qt::WindowMaximizeButtonHint);
+    }
+#endif
+    Q_EMIT pIsFixedSizeChanged();
+}
+
+bool ElaAppBar::getIsFixedSize() const
+{
+    Q_D(const ElaAppBar);
+    return d->_pIsFixedSize;
 }
 
 void ElaAppBar::setWindowButtonFlag(ElaAppBarType::ButtonType buttonFlag, bool isEnable)
@@ -308,14 +324,18 @@ void ElaAppBar::setRouteBackButtonEnable(bool isEnable)
 void ElaAppBar::closeWindow()
 {
     Q_D(ElaAppBar);
-    eApp->setIsApplicationClosed(true);
     QPropertyAnimation* closeOpacityAnimation = new QPropertyAnimation(window(), "windowOpacity");
-    connect(closeOpacityAnimation, &QPropertyAnimation::finished, this, [=]() { window()->close(); });
+    connect(closeOpacityAnimation, &QPropertyAnimation::finished, this, [=]() {
+#ifdef Q_OS_WIN
+        QGuiApplication::instance()->removeNativeEventFilter(this);
+#endif
+        window()->close();
+    });
     closeOpacityAnimation->setStartValue(1);
     closeOpacityAnimation->setEndValue(0);
     closeOpacityAnimation->setEasingCurve(QEasingCurve::InOutSine);
     closeOpacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-    if (window()->isMaximized() || window()->isFullScreen())
+    if (window()->isMaximized() || window()->isFullScreen() || d->_pIsFixedSize)
     {
         return;
     }
@@ -334,7 +354,7 @@ bool ElaAppBar::eventFilter(QObject* obj, QEvent* event)
     Q_D(ElaAppBar);
     switch (event->type())
     {
-#if (QT_VERSION == QT_VERSION_CHECK(6, 5, 3) || QT_VERSION == QT_VERSION_CHECK(6, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
     case QEvent::WindowActivate:
     {
         HWND hwnd = reinterpret_cast<HWND>(window()->winId());
@@ -350,7 +370,7 @@ bool ElaAppBar::eventFilter(QObject* obj, QEvent* event)
     case QEvent::Resize:
     {
         QSize size = parentWidget()->size();
-#if (QT_VERSION == QT_VERSION_CHECK(6, 5, 3) || QT_VERSION == QT_VERSION_CHECK(6, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
         if (::IsZoomed((HWND)d->_currentWinID))
         {
             this->resize(size.width() - 7, this->height());
@@ -364,6 +384,19 @@ bool ElaAppBar::eventFilter(QObject* obj, QEvent* event)
 #endif
         break;
     }
+#ifdef Q_OS_WIN
+    case QEvent::Show:
+    {
+        d->_currentWinID = window()->winId();
+        QGuiApplication::instance()->installNativeEventFilter(this);
+        HWND hwnd = reinterpret_cast<HWND>(window()->winId());
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
+        setShadow(hwnd);
+#endif
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+        break;
+    }
+#endif
     case QEvent::Close:
     {
         QCloseEvent* closeEvent = dynamic_cast<QCloseEvent*>(event);
@@ -378,7 +411,9 @@ bool ElaAppBar::eventFilter(QObject* obj, QEvent* event)
         }
         else
         {
-            eApp->setIsApplicationClosed(true);
+#ifdef Q_OS_WIN
+            QGuiApplication::instance()->removeNativeEventFilter(this);
+#endif
         }
         return true;
     }
@@ -542,7 +577,7 @@ bool ElaAppBar::nativeEventFilter(const QByteArray& eventType, void* message, lo
     }
     case WM_NCCALCSIZE:
     {
-#if (QT_VERSION == QT_VERSION_CHECK(6, 5, 3) || QT_VERSION == QT_VERSION_CHECK(6, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
         if (wParam == FALSE)
         {
             return false;

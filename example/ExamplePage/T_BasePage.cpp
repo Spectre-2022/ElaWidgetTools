@@ -1,6 +1,7 @@
 #include "T_BasePage.h"
 
 #include <QHBoxLayout>
+#include <QPainter>
 #include <QVBoxLayout>
 
 #include "ElaMenu.h"
@@ -10,15 +11,22 @@
 T_BasePage::T_BasePage(QWidget* parent)
     : ElaScrollPage(parent)
 {
+    connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
+        if (!parent)
+        {
+            update();
+        }
+    });
 }
 
 T_BasePage::~T_BasePage()
 {
 }
 
-QVBoxLayout* T_BasePage::createTopLayout(QString desText)
+void T_BasePage::createCustomWidget(QString desText)
 {
     // 顶部元素
+    QWidget* customWidget = new QWidget(this);
     ElaText* subTitleText = new ElaText(this);
     subTitleText->setText("https://github.com/Liniyous/ElaWidgetTools");
     subTitleText->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -67,12 +75,27 @@ QVBoxLayout* T_BasePage::createTopLayout(QString desText)
     descText->setText(desText);
     descText->setTextPixelSize(13);
 
-    QVBoxLayout* topLayout = new QVBoxLayout();
+    QVBoxLayout* topLayout = new QVBoxLayout(customWidget);
     topLayout->setContentsMargins(0, 0, 0, 0);
     topLayout->addWidget(subTitleText);
     topLayout->addSpacing(5);
     topLayout->addLayout(buttonLayout);
     topLayout->addSpacing(5);
     topLayout->addWidget(descText);
-    return topLayout;
+    setCustomWidget(customWidget);
+}
+
+void T_BasePage::paintEvent(QPaintEvent* event)
+{
+    if (!parent())
+    {
+        QPainter painter(this);
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(ElaThemeColor(eTheme->getThemeMode(), WindowBaseStart));
+        painter.drawRect(rect());
+        painter.restore();
+    }
+    ElaScrollPage::paintEvent(event);
 }
