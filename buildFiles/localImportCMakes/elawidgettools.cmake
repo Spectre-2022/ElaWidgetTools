@@ -1,0 +1,7 @@
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(elawidgettools_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/Debug/include/)
+    set(elawidgettools_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/Debug/lib/elawidgettoolsd.lib)
+else()
+    set(elawidgettools_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/Release/include/)
+    set(elawidgettools_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/Release/lib/elawidgettools.lib)
+endif()

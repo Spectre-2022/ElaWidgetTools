@@ -1,12 +1,12 @@
 ﻿cmake_minimum_required(VERSION 3.5)
-
-project(elawidgettools VERSION 0.1 LANGUAGES CXX)
+include(${CMAKE_CURRENT_LIST_DIR}/../buildFiles/versionReader.cmake)
+project(elawidgettools VERSION ${VERSION_FIRST_NUMBER}.${VERSION_SECOND_NUMBER}.${VERSION_THIRD_NUMBER}.${VERSION_FOURTH_NUMBER} LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -34,6 +34,20 @@ set(PROJECT_SOURCES
     ${sources_files}
 )
 
+if(MSVC)
+    set(MY_VERSIONINFO_RC "${CMAKE_BINARY_DIR}/elawidgettools.rc")
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/Version.rc.in"
+                   "${MY_VERSIONINFO_RC}")
+endif()
+
+
+#@NOTE:Release下生成PDB
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+endif()
+
 if (ELAWIDGETTOOLS_BUILD_STATIC_LIB)
     set(LIB_TYPE "STATIC")
 else()
@@ -43,10 +57,12 @@ endif()
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 qt_add_library(${PROJECT_NAME} ${LIB_TYPE}
     ${sources_files}
+    ${MY_VERSIONINFO_RC}
 )
 else()
 add_library(${PROJECT_NAME} ${LIB_TYPE}
     ${sources_files}
+    ${MY_VERSIONINFO_RC}
 )
 endif()
 

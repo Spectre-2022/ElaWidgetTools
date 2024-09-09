@@ -6,7 +6,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 配置install路径
@@ -20,6 +20,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 add_subdirectory(example)
 add_subdirectory(src)
+
+#@NOTE:用于本地导入elawidgettools库的cmake
+install(FILES ${CMAKE_SOURCE_DIR}/buildFiles/localImportCMakes/elawidgettools.cmake
+    DESTINATION ${CMAKE_SOURCE_DIR}/install/elawidgettools/
+)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
