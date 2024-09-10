@@ -113,6 +113,7 @@ set(export_headers
     ${CMAKE_CURRENT_LIST_DIR}/include/ElaTheme.h
     ${CMAKE_CURRENT_LIST_DIR}/include/ElaLineEdit.h
     ${CMAKE_CURRENT_LIST_DIR}/include/ElaSlider.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ElaColorDialog.h
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${export_headers}")
 
