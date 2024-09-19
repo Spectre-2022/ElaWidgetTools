@@ -4,6 +4,7 @@
 #include <QPropertyAnimation>
 
 #include "ElaBaseListView.h"
+#include "ElaCustomWidget.h"
 #include "ElaFooterDelegate.h"
 #include "ElaFooterModel.h"
 #include "ElaIconButton.h"
@@ -52,13 +53,12 @@ void ElaNavigationBarPrivate::onNavigationOpenNewWindow(QString nodeKey)
     {
         return;
     }
+    ElaCustomWidget* floatWidget = new ElaCustomWidget();
     QWidget* widget = static_cast<QWidget*>(meta->newInstance());
-    if (widget)
-    {
-        widget->resize(600, 600);
-        widget->setAttribute(Qt::WA_DeleteOnClose);
-        widget->show();
-    }
+    floatWidget->setWindowIcon(widget->windowIcon());
+    floatWidget->setWindowTitle(widget->windowTitle());
+    floatWidget->setCentralWidget(widget);
+    floatWidget->show();
 }
 
 void ElaNavigationBarPrivate::onNavigationRouteBack(QVariantMap routeData)
@@ -177,6 +177,12 @@ void ElaNavigationBarPrivate::onTreeViewClicked(const QModelIndex& index, bool i
                     }
                     else
                     {
+                        if (originNode == _navigationModel->getSelectedExpandedNode())
+                        {
+                            _navigationModel->setSelectedNode(node);
+                            _resetNodeSelected();
+                            return;
+                        }
                         _navigationModel->setSelectedExpandedNode(originNode);
                         postData.insert("SelectedNode", QVariant::fromValue(originNode));
                     }
@@ -467,7 +473,14 @@ void ElaNavigationBarPrivate::_handleMaximalToCompactLayout()
     {
         _navigationButtonLayout->takeAt(0);
     }
-    _navigationButtonLayout->addSpacing(76);
+    if (_isShowUserCard)
+    {
+        _navigationButtonLayout->addSpacing(76);
+    }
+    else
+    {
+        _navigationButtonLayout->addSpacing(40);
+    }
 
     _navigationSuggestLayout->addStretch();
 
@@ -492,7 +505,10 @@ void ElaNavigationBarPrivate::_handleCompactToMaximalLayout()
     {
         _userButtonLayout->takeAt(0);
     }
-    _userButtonLayout->addSpacing(74);
+    if (_isShowUserCard)
+    {
+        _userButtonLayout->addSpacing(74);
+    }
 }
 
 void ElaNavigationBarPrivate::_resetLayout()
