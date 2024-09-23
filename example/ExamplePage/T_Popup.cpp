@@ -3,6 +3,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+#include "ElaCalendar.h"
+#include "ElaCalendarPicker.h"
 #include "ElaColorDialog.h"
 #include "ElaMenu.h"
 #include "ElaPushButton.h"
@@ -41,7 +43,7 @@ T_Popup::T_Popup(QWidget* parent)
     toolButtonLayout->addWidget(_toolButton);
     toolButtonLayout->addStretch();
 
-    _colorDialog = new ElaColorDialog(this);
+    _colorDialog = new ElaColorDialog();
     ElaText* colorText = new ElaText(_colorDialog->getCurrentColorRGB(), this);
     colorText->setTextPixelSize(15);
     ElaPushButton* colorDialogButton = new ElaPushButton(this);
@@ -74,10 +76,23 @@ T_Popup::T_Popup(QWidget* parent)
     colorDialogLayout->addWidget(colorText);
     colorDialogLayout->addStretch();
 
+    _calendar = new ElaCalendar(this);
+
+    _calendarPicker = new ElaCalendarPicker(this);
+    ElaScrollPageArea* calendarPickerArea = new ElaScrollPageArea(this);
+    QHBoxLayout* calendarPickerLayout = new QHBoxLayout(calendarPickerArea);
+    ElaText* calendarPickerText = new ElaText("ElaCalendarPicker", this);
+    calendarPickerText->setTextPixelSize(15);
+    calendarPickerLayout->addWidget(calendarPickerText);
+    calendarPickerLayout->addWidget(_calendarPicker);
+    calendarPickerLayout->addStretch();
+
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
     centerVLayout->setContentsMargins(0, 0, 0, 0);
     centerVLayout->addWidget(toolButtonArea);
     centerVLayout->addWidget(colorDialogArea);
+    centerVLayout->addWidget(calendarPickerArea);
+    centerVLayout->addWidget(_calendar);
     centerVLayout->addStretch();
     addCentralWidget(centralWidget, true, false, 0);
 }
