@@ -12,7 +12,6 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-#include "ElaAppBar.h"
 #include "ElaApplication.h"
 #include "ElaCentralStackedWidget.h"
 #include "ElaEventBus.h"
@@ -26,14 +25,14 @@
 #include "private/ElaWindowPrivate.h"
 Q_PROPERTY_CREATE_Q_CPP(ElaWindow, int, ThemeChangeTime)
 Q_PROPERTY_CREATE_Q_CPP(ElaWindow, ElaNavigationType::NavigationDisplayMode, NavigationBarDisplayMode)
-
+Q_TAKEOVER_NATIVEEVENT_CPP(ElaWindow, d_func()->_appBar);
 ElaWindow::ElaWindow(QWidget* parent)
     : QMainWindow{parent}, d_ptr(new ElaWindowPrivate())
 {
     Q_D(ElaWindow);
     d->q_ptr = this;
     d->_pIsEnableMica = false;
-    d->_pMicaImagePath = ":/Resource/Image/MicaBase.png";
+    d->_pMicaImagePath = ":/include/Image/MicaBase.png";
     setProperty("ElaBaseClassName", "ElaWindow");
     resize(1020, 680); // 默认宽高
 
@@ -203,6 +202,8 @@ void ElaWindow::setMicaImagePath(QString micaImagePath)
 {
     Q_D(ElaWindow);
     d->_pMicaImagePath = micaImagePath;
+    d->_initMicaBaseImage(QImage(d->_pMicaImagePath));
+    Q_EMIT pMicaImagePathChanged();
 }
 
 QString ElaWindow::getMicaImagePath() const
