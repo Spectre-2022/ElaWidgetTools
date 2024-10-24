@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+#include "ElaApplication.h"
 #include "ElaComboBox.h"
 #include "ElaLog.h"
 #include "ElaRadioButton.h"
@@ -71,7 +72,7 @@ T_Setting::T_Setting(QWidget* parent)
     micaSwitchLayout->addStretch();
     micaSwitchLayout->addWidget(_micaSwitchButton);
     connect(_micaSwitchButton, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        window->setIsEnableMica(checked);
+        eApp->setIsEnableMica(checked);
     });
 
     _logSwitchButton = new ElaToggleSwitch(this);
@@ -111,17 +112,29 @@ T_Setting::T_Setting(QWidget* parent)
     displayModeLayout->addWidget(_compactButton);
     displayModeLayout->addWidget(_maximumButton);
     displayModeLayout->addWidget(_autoButton);
-    connect(_minimumButton, &ElaRadioButton::toggled, this, [=]() {
-        window->setNavigationBarDisplayMode(ElaNavigationType::Minimal);
+    connect(_minimumButton, &ElaRadioButton::toggled, this, [=](bool checked) {
+        if (checked)
+        {
+            window->setNavigationBarDisplayMode(ElaNavigationType::Minimal);
+        }
     });
-    connect(_compactButton, &ElaRadioButton::toggled, this, [=]() {
-        window->setNavigationBarDisplayMode(ElaNavigationType::Compact);
+    connect(_compactButton, &ElaRadioButton::toggled, this, [=](bool checked) {
+        if (checked)
+        {
+            window->setNavigationBarDisplayMode(ElaNavigationType::Compact);
+        }
     });
-    connect(_maximumButton, &ElaRadioButton::toggled, this, [=]() {
-        window->setNavigationBarDisplayMode(ElaNavigationType::Maximal);
+    connect(_maximumButton, &ElaRadioButton::toggled, this, [=](bool checked) {
+        if (checked)
+        {
+            window->setNavigationBarDisplayMode(ElaNavigationType::Maximal);
+        }
     });
-    connect(_autoButton, &ElaRadioButton::toggled, this, [=]() {
-        window->setNavigationBarDisplayMode(ElaNavigationType::Auto);
+    connect(_autoButton, &ElaRadioButton::toggled, this, [=](bool checked) {
+        if (checked)
+        {
+            window->setNavigationBarDisplayMode(ElaNavigationType::Auto);
+        }
     });
 
     QWidget* centralWidget = new QWidget(this);
