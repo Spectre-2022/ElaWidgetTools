@@ -2,13 +2,13 @@
 install(TARGETS ${EXPORT_NAME}
     CONFIGURATIONS Debug
     DESTINATION ${EXPORT_NAME}/Debug/lib/
-    PUBLIC_HEADER DESTINATION ${EXPORT_NAME}/Debug/include/
+    PUBLIC_HEADER DESTINATION ${EXPORT_NAME}/Debug/include/ElaWidgetTools/
 )
 #@NOTE:Release模式下生成dll
 install(TARGETS ${EXPORT_NAME}
     CONFIGURATIONS Release
     DESTINATION ${EXPORT_NAME}/Release/lib/
-    PUBLIC_HEADER DESTINATION ${EXPORT_NAME}/Release/include/
+    PUBLIC_HEADER DESTINATION ${EXPORT_NAME}/Release/include/ElaWidgetTools/
 )
 
 
@@ -23,4 +23,4 @@ install(FILES $<TARGET_PDB_FILE:${EXPORT_NAME}>
     DESTINATION ${EXPORT_NAME}/Release/lib OPTIONAL
 )
 #@NOTE:导出所有header
-install(FILES ${EXPORT_HEADERS} DESTINATION ${EXPORT_NAME}/Release/include)
+install(FILES ${EXPORT_HEADERS} DESTINATION ${EXPORT_NAME}/Release/include/ElaWidgetTools/)
