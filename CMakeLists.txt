@@ -9,6 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(BUILD_ELAWIDGETTOOLS_EXAMPLE FALSE CACHE BOOL "Build Example")
 # 配置install路径
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
@@ -18,8 +19,10 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-add_subdirectory(example)
 add_subdirectory(src)
+if(BUILD_ELAWIDGETTOOLS_EXAMPLE)
+  add_subdirectory(example)
+endif ()
 
 #@NOTE:用于本地导入elawidgettools库的cmake
 install(FILES ${CMAKE_SOURCE_DIR}/buildFiles/localImportCMakes/elawidgettools.cmake
