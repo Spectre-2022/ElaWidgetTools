@@ -62,20 +62,6 @@ add_library(${EXPORT_NAME} ${LIB_TYPE}
 )
 endif()
 
-set(export_headers
-    ${CMAKE_CURRENT_LIST_DIR}/include/stdafx.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaDoubleSpinBox.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaApplication.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/singleton.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaMessageButton.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaMessageBar.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/Def.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaTheme.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaLineEdit.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaSlider.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/ElaColorDialog.h
-)
-
 file(GLOB EXPORT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/*.qrc
 )
@@ -119,6 +105,41 @@ target_link_libraries(${EXPORT_NAME} PUBLIC
 )
 endif()
 
-set_target_properties(${EXPORT_NAME} PROPERTIES PUBLIC_HEADER "${export_headers}")
+set_target_properties(${EXPORT_NAME} PROPERTIES PUBLIC_HEADER "${EXPORT_HEADERS}")
 
 include(${CMAKE_SOURCE_DIR}/cmakefiles/installDir.cmake)
+
+
+#@NOTE:项目原始CMake导出
+# install(
+#     TARGETS ${EXPORT_NAME}
+#     EXPORT ${EXPORT_NAME}
+#     ARCHIVE DESTINATION lib
+#     LIBRARY DESTINATION lib
+#     RUNTIME DESTINATION lib
+# )
+
+# install(FILES ${EXPORT_HEADERS} DESTINATION include)
+
+# set(INCLUDE_DIRS include)
+# set(LIBRARIES ${EXPORT_NAME})
+# set(LIB_DIR lib)
+
+# include(CMakePackageConfigHelpers)
+# write_basic_package_version_file(
+#     ${PROJECT_BINARY_DIR}/${EXPORT_NAME}ConfigVersion.cmake
+#     VERSION 2.0.0
+#     COMPATIBILITY SameMajorVersion
+# )
+
+# configure_package_config_file(
+#     ${PROJECT_SOURCE_DIR}/${EXPORT_NAME}Config.cmake.in
+#     ${PROJECT_BINARY_DIR}/${EXPORT_NAME}Config.cmake
+#     INSTALL_DESTINATION lib/cmake
+#     PATH_VARS INCLUDE_DIRS LIBRARIES LIB_DIR
+#     INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}
+# )
+
+# install(
+#     FILES ${PROJECT_BINARY_DIR}/${EXPORT_NAME}Config.cmake ${PROJECT_BINARY_DIR}/${EXPORT_NAME}ConfigVersion.cmake DESTINATION lib/cmake
+# )

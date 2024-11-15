@@ -22,3 +22,5 @@ install(FILES $<TARGET_PDB_FILE:${EXPORT_NAME}>
     CONFIGURATIONS Release
     DESTINATION ${EXPORT_NAME}/Release/lib OPTIONAL
 )
+#@NOTE:导出所有header
+install(FILES ${EXPORT_HEADERS} DESTINATION ${EXPORT_NAME}/Release/include)
