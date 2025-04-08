@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.5)
 
-project(ElaWidgetTools VERSION 0.1 LANGUAGES CXX)
+project(ElaFramework VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(BUILD_ELAWIDGETTOOLS_EXAMPLE TRUE CACHE BOOL "Build Example")
+
 # 配置install路径
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
