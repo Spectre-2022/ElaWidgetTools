@@ -31,6 +31,7 @@ set(PROJECT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ElaWidgetTools.qrc
 )
 
+
 if (ELAWIDGETTOOLS_BUILD_STATIC_LIB)
     set(LIB_TYPE "STATIC")
 else ()
@@ -55,13 +56,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:${PROJECT_NAME}/include>
 )
 
-if (MINGW)
-    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
-endif ()
-if (MSVC)
-    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
-endif ()
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
@@ -77,56 +71,11 @@ else ()
     )
 endif ()
 
+if (MINGW)
+    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+endif ()
+if (MSVC)
+    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
+endif ()
 
-install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}
-    ARCHIVE DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib
-    LIBRARY DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib
-    RUNTIME DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib
-)
-install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample/${CMAKE_BUILD_TYPE}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample/${CMAKE_BUILD_TYPE}
-)
-# if (MSVC AND NOT LIB_TYPE STREQUAL "STATIC")
-#     install(
-#         FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
-#         DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample/${CMAKE_BUILD_TYPE} OPTIONAL)
-# endif ()
-
-install(FILES ${EXPORT_HEADERS} DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/include)
-
-set(INCLUDE_DIRS include)
-set(LIBRARIES ${PROJECT_NAME})
-set(LIB_DIR lib)
-
-install(
-    EXPORT ${PROJECT_NAME}
-    FILE ${PROJECT_NAME}Targets.cmake
-    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib/cmake
-)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    VERSION 2.0.0
-    COMPATIBILITY SameMajorVersion
-)
-
-configure_package_config_file(
-    ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION lib/cmake
-    PATH_VARS INCLUDE_DIRS LIBRARIES LIB_DIR
-    INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
-)
-
-install(
-    FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib/cmake
-)
-
-#@NOTE:生成PDB文件
-install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
-    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib OPTIONAL
-)
+include(${CMAKE_CURRENT_LIST_DIR}/../buildFiles/installConfig.cmake)

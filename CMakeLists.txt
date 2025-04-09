@@ -12,6 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(BUILD_ELAWIDGETTOOLS_EXAMPLE TRUE CACHE BOOL "Build Example")
 
+
+# 确保启用调试符号生成
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Zi")
+
+# 确保链接器生成 PDB 文件
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+
+# 显式指定 PDB 输出目录
+set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/pdb)
+
+
 # # 配置install路径
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
@@ -37,7 +50,7 @@ endif ()
 
 #@NOTE:用于本地导入elawidgettools库的cmake
 install(FILES ${CMAKE_SOURCE_DIR}/buildFiles/localImportCMakes/elawidgettools.cmake
-    DESTINATION ${CMAKE_SOURCE_DIR}/install/elawidgettools/
+    DESTINATION ${CMAKE_SOURCE_DIR}/install/Elawidgettools/
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

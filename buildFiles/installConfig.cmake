@@ -1,25 +1,18 @@
-if(NOT DEFINED ${RunWithAMS})
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_LIST_DIR}/../install/)
-endif()
-#@NOTE:Debug模式下生成PDB文件
-install(FILES $<TARGET_PDB_FILE:${lib_alias_name}>
-    CONFIGURATIONS Debug
-    DESTINATION lib/${lib_alias_name}/Debug/lib OPTIONAL
+#@NOTE:导出PDB文件
+install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
+    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib OPTIONAL
 )
-#@NOTE:Release模式下生成PDB文件
-install(FILES $<TARGET_PDB_FILE:${lib_alias_name}>
-    CONFIGURATIONS Release
-    DESTINATION lib/${lib_alias_name}/Release/lib OPTIONAL
+#@NOTE:导出dll
+install(TARGETS ${PROJECT_NAME}
+    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib/
+    PUBLIC_HEADER DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/include/
 )
-#@NOTE:Debug模式下生成dll
-install(TARGETS ${lib_alias_name}
-    CONFIGURATIONS Debug
-    DESTINATION lib/${lib_alias_name}/Debug/lib/
-    PUBLIC_HEADER DESTINATION lib/${lib_alias_name}/Debug/include/
+#@NOTE:导出头文件
+install(FILES ${EXPORT_HEADERS}
+    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/include/
 )
-#@NOTE:Release模式下生成dll
-install(TARGETS ${lib_alias_name}
-    CONFIGURATIONS Release
-    DESTINATION lib/${lib_alias_name}/Release/lib/
-    PUBLIC_HEADER DESTINATION lib/${lib_alias_name}/Release/include/
+#@NOTE:导出可执行文件到实例代码
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample/${CMAKE_BUILD_TYPE}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample/${CMAKE_BUILD_TYPE}
 )
