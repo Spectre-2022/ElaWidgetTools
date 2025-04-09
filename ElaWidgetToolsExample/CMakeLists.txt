@@ -6,7 +6,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -105,17 +105,17 @@ endif ()
 if (WIN32)
     include(GNUInstallDirs)
     install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}
     )
     if (MSVC)
         install(
             FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME} OPTIONAL)
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE} OPTIONAL)
     endif ()
     # QT依赖安装 只做Release安装 Debug自行打包
-    install(FILES ${QT_SDK_DIR}/plugins/platforms/qwindows.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/platforms)
-    install(FILES ${QT_SDK_DIR}/plugins/generic/qtuiotouchplugin.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/generic)
+    install(FILES ${QT_SDK_DIR}/plugins/platforms/qwindows.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/platforms)
+    install(FILES ${QT_SDK_DIR}/plugins/generic/qtuiotouchplugin.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/generic)
     install(
         FILES ${QT_SDK_DIR}/plugins/imageformats/qgif.dll
         FILES ${QT_SDK_DIR}/plugins/imageformats/qicns.dll
@@ -125,18 +125,22 @@ if (WIN32)
         FILES ${QT_SDK_DIR}/plugins/imageformats/qtiff.dll
         FILES ${QT_SDK_DIR}/plugins/imageformats/qwbmp.dll
         FILES ${QT_SDK_DIR}/plugins/imageformats/qwebp.dll
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/imageformats
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/imageformats
     )
-    install(FILES ${QT_SDK_DIR}/plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/styles)
+    install(FILES ${QT_SDK_DIR}/plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/styles)
     FILE(GLOB TRANSLATIONS ${QT_SDK_DIR}/translations_install/*.qm)
-    install(FILES ${TRANSLATIONS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/translations)
+    install(FILES ${TRANSLATIONS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/translations)
     install(
         FILES ${QT_SDK_DIR}/bin/Qt${QT_VERSION_MAJOR}Widgets.dll
         FILES ${QT_SDK_DIR}/bin/Qt${QT_VERSION_MAJOR}Core.dll
         FILES ${QT_SDK_DIR}/bin/Qt${QT_VERSION_MAJOR}Gui.dll
         FILES ${QT_SDK_DIR}/bin/Qt${QT_VERSION_MAJOR}Network.dll
         FILES ${QT_SDK_DIR}/bin/Qt${QT_VERSION_MAJOR}Xml.dll
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${CMAKE_BUILD_TYPE}
     )
 endif ()
 
+#@NOTE:生成PDB文件
+install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
+    DESTINATION ${PROJECT_NAME}/${CMAKE_BUILD_TYPE}/lib OPTIONAL
+)

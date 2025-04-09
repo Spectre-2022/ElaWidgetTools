@@ -1,5 +1,5 @@
 #@NOTE:从version.txt读取版本号
-file(STRINGS "./../version.txt" PROINFO_STR)
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/../version.txt" PROINFO_STR)
 string(REPLACE ":" ";" PROINFO_LST ${PROINFO_STR})
 list(GET PROINFO_LST 0 LIB_NAME)
 list(GET PROINFO_LST 1 VERSION)
