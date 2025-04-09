@@ -38,13 +38,21 @@ else ()
     set(LIB_TYPE "SHARED")
 endif ()
 
+if(MSVC)
+    set(MY_VERSIONINFO_RC "${CMAKE_BINARY_DIR}/ElaWidgetTools.rc")
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/../buildFiles/Version.rc.in"
+                    "${MY_VERSIONINFO_RC}")
+endif()
+
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_library(${PROJECT_NAME} ${LIB_TYPE}
         ${PROJECT_SOURCES}
+        ${MY_VERSIONINFO_RC}
     )
 else ()
     add_library(${PROJECT_NAME} ${LIB_TYPE}
         ${PROJECT_SOURCES}
+        ${MY_VERSIONINFO_RC}
     )
 endif ()
 

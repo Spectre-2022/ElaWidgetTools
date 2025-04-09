@@ -10,8 +10,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(BUILD_ELAWIDGETTOOLS_EXAMPLE TRUE CACHE BOOL "Build Example")
-
 
 # 确保启用调试符号生成
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
@@ -36,6 +34,8 @@ SET(QT_SDK_DIR C:/Code/Qt/6.2.4/msvc2019_64 CACHE PATH "QT SDK DIR" FORCE)
 SET(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install CACHE PATH "Installation path" FORCE)
 
 option(BUILD_ELAPACKETIO "Build ElaPacketIO" OFF)
+option(BUILD_ELAWIDGETTOOLS_EXAMPLE "Build ElaWidgetToolsExample" ON)
+
 list(APPEND CMAKE_PREFIX_PATH ${QT_SDK_DIR})
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
@@ -45,8 +45,11 @@ add_subdirectory(ElaWidgetTools)
 if (WIN32 AND BUILD_ELAPACKETIO)
     add_definitions(-DBUILD_WITH_ELAPACKETIO)
     add_subdirectory(ElaPacketIO)
-    add_subdirectory(ElaWidgetToolsExample)
 endif ()
+
+if(BUILD_ELAWIDGETTOOLS_EXAMPLE)
+    add_subdirectory(ElaWidgetToolsExample)
+endif()
 
 #@NOTE:用于本地导入elawidgettools库的cmake
 install(FILES ${CMAKE_SOURCE_DIR}/buildFiles/localImportCMakes/elawidgettools.cmake
