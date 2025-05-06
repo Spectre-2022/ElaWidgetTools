@@ -1,4 +1,4 @@
-#include "T_TableView.h"
+#include "T_TableView_Delegate.h"
 
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -9,7 +9,7 @@
 #include "ElaText.h"
 #include "T_TableViewModel.h"
 #include <QStandardItemModel>
-T_TableView::T_TableView(QWidget* parent)
+T_TableView_Delegate::T_TableView_Delegate(QWidget* parent)
     : T_BasePage(parent)
 {
     // 预览窗口标题
@@ -28,9 +28,13 @@ T_TableView::T_TableView(QWidget* parent)
     tableHeaderFont.setPixelSize(16);
     _tableView->horizontalHeader()->setFont(tableHeaderFont);
 
-    auto tModel{new T_TableViewModel(this)};
-    _tableView->setModel(tModel);
-
+    auto model{new QStandardItemModel(this)};
+    for (int xIndex = 0; xIndex < 10; ++xIndex) {
+        for (int yIndex = 0; yIndex < 10; ++yIndex) {
+            model->setItem(xIndex, yIndex, new QStandardItem(QString::number(yIndex)));
+        }
+    }
+    _tableView->setModel(model);
     _tableView->setAlternatingRowColors(true);
     _tableView->setIconSize(QSize(38, 38));
     _tableView->verticalHeader()->setHidden(true);
@@ -52,6 +56,24 @@ T_TableView::T_TableView(QWidget* parent)
     QHBoxLayout* tableViewLayout = new QHBoxLayout();
     tableViewLayout->setContentsMargins(0, 0, 10, 0);
     tableViewLayout->addWidget(_tableView);
+
+    QStringList data0;
+    data0 << "0"
+          << "1"
+          << "2"
+          << "3"
+          << "4"
+          << "5";
+
+    auto delegate{new ElaComboBoxDelegate(data0)};
+    _tableView->setItemDelegate(delegate);
+    _tableView->setEditTriggers(QAbstractItemView::DoubleClicked);
+
+    connect(_tableView, &ElaTableView::doubleClicked, this, [&, model](const QModelIndex& index){
+        qDebug() << "[Debug]:doubleClicked = " << index.isValid() << model->flags(index);
+        _tableView->edit(index);
+    });
+
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("ElaView");
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
@@ -62,6 +84,6 @@ T_TableView::T_TableView(QWidget* parent)
     addCentralWidget(centralWidget, true, false, 0);
 }
 
-T_TableView::~T_TableView()
+T_TableView_Delegate::~T_TableView_Delegate()
 {
 }

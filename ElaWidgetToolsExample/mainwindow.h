@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "ElaWindow.h"
+#include "T_TableView_Delegate.h"
 
 #include <QMainWindow>
 class T_Home;
@@ -45,6 +46,7 @@ private:
     T_Card* _cardPage{nullptr};
     T_ListView* _listViewPage{nullptr};
     T_TableView* _tableViewPage{nullptr};
+    T_TableView_Delegate* _tableViewDelegatePage{nullptr};
     T_TreeView* _treeViewPage{nullptr};
     T_About* _aboutPage{nullptr};
     T_Setting* _settingPage{nullptr};

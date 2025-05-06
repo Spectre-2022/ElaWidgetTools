@@ -20,7 +20,8 @@ ElaComboBox::ElaComboBox(QWidget* parent)
     d->_pBorderRadius = 3;
     d->_themeMode = eTheme->getThemeMode();
     setObjectName("ElaComboBox");
-    setFixedHeight(35);
+    // setFixedHeight(35);
+    setMinimumHeight(35);
     d->_comboBoxStyle = new ElaComboBoxStyle(style());
     setStyle(d->_comboBoxStyle);
 

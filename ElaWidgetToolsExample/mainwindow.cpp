@@ -23,6 +23,7 @@
 #include "T_ListView.h"
 #include "T_Setting.h"
 #include "T_TableView.h"
+#include "T_TableView_Delegate.h"
 #include "T_TreeView.h"
 #ifdef Q_OS_WIN
 #include "ExamplePage/T_ElaScreen.h"
@@ -216,6 +217,7 @@ void MainWindow::initContent()
     _popupPage = new T_Popup(this);
     _cardPage = new T_Card(this);
     _listViewPage = new T_ListView(this);
+    _tableViewDelegatePage  = new T_TableView_Delegate(this);
     _tableViewPage = new T_TableView(this);
     _treeViewPage = new T_TreeView(this);
     _settingPage = new T_Setting(this);
@@ -232,6 +234,7 @@ void MainWindow::initContent()
 
     addExpanderNode("ElaView", _viewKey, ElaIconType::CameraViewfinder);
     addPageNode("ElaListView", _listViewPage, _viewKey, 9, ElaIconType::List);
+    addPageNode("ElaTableViewDelegate", _tableViewDelegatePage, _viewKey, ElaIconType::Table);
     addPageNode("ElaTableView", _tableViewPage, _viewKey, ElaIconType::Table);
     addPageNode("ElaTreeView", _treeViewPage, _viewKey, ElaIconType::ListTree);
     expandNavigationNode(_viewKey);
