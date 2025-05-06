@@ -17,7 +17,7 @@ QWidget *ElaComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionVi
     Q_UNUSED(option)
     Q_UNUSED(index)
     ElaComboBox* editor = new ElaComboBox(parent);
-    editor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     editor->addItems(m_SelecterTexts);
     return editor;
 }

@@ -3,6 +3,8 @@
 
 #include <QMutex>
 
+namespace ElaWidgetTools {
+
 template <typename T>
 class Singleton
 {
@@ -55,5 +57,7 @@ public:                             \
         }                              \
         return _instance;              \
     }
+
+}
 
 #endif // SINGLETON_H

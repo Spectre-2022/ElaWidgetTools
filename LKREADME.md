@@ -2,6 +2,19 @@
   
 ***  
   
+# 发布版本:   Beta-V0.0.0.2.2
+发布日期：  2025年5月6日  
+操作系统:   Windows10 64位  
+Qt版本:     Qt 6.2.4  
+编译器:     Qt 6.2.4 MSVC2019  
+
+更新说明： 
+1. 添加ElaComboBoxDelegate代理控件；  
+2. 修改ElaComboBox的缩放规制为优先扩展；  
+3. 为Singleton类增加ElaWidgetTools的命名空间；  
+  
+***  
+  
 # 发布版本:   Beta-V0.0.0.2.1
 发布日期：  2025年5月6日  
 操作系统:   Windows10 64位  
