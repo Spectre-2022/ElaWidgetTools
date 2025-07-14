@@ -32,6 +32,9 @@ public:
     void initEdgeLayout();
     void initContent();
 
+protected:
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+
 private:
     ElaContentDialog* _closeDialog{nullptr};
     T_Home* _homePage{nullptr};
