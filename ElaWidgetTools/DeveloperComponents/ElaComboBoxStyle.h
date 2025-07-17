@@ -21,7 +21,7 @@ public:
 
 private:
     ElaThemeType::ThemeMode _themeMode;
-    int _shadowBorderWidth{6};
+    int _shadowBorderWidth{0};  //@TODO:因为其会影响使用代理时的显示效果，故暂时修改为0；
 };
 
 #endif // ELACOMBOBOXSTYLE_H
