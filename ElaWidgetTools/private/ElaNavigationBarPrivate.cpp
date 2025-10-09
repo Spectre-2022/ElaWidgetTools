@@ -1,10 +1,8 @@
 ﻿#include "ElaNavigationBarPrivate.h"
 
-#include <QLayout>
-#include <QPropertyAnimation>
-
 #include "ElaApplication.h"
 #include "ElaBaseListView.h"
+#include "ElaCustomTabWidget.h"
 #include "ElaCustomWidget.h"
 #include "ElaFooterDelegate.h"
 #include "ElaFooterModel.h"
@@ -19,7 +17,10 @@
 #include "ElaSuggestBox.h"
 #include "ElaSuggestBoxPrivate.h"
 #include "ElaToolButton.h"
-
+#include <QDebug>
+#include <QEvent>
+#include <QLayout>
+#include <QPropertyAnimation>
 ElaNavigationBarPrivate::ElaNavigationBarPrivate(QObject* parent)
     : QObject{parent}
 {
@@ -50,27 +51,25 @@ void ElaNavigationBarPrivate::onNavigationOpenNewWindow(QString nodeKey)
     {
         return;
     }
-    QWidget* widget = static_cast<QWidget*>(meta->newInstance());
+    QWidget* widget = dynamic_cast<QWidget*>(meta->newInstance());
     if (widget)
     {
-        _pageNewWindowCountMap[nodeKey] += 1;
-        ElaCustomWidget* floatWidget = new ElaCustomWidget(q);
-        connect(floatWidget, &ElaCustomWidget::customWidgetClosed, this, [=]() {
-            _pageNewWindowCountMap[nodeKey] -= 1;
-        });
-        floatWidget->setWindowIcon(widget->windowIcon());
-        floatWidget->setWindowTitle(widget->windowTitle());
-        floatWidget->setCentralWidget(widget);
+        widget->setProperty("ElaPageKey", nodeKey);
+        widget->setProperty("ElaFloatParentWidget", QVariant::fromValue(q));
+        widget->installEventFilter(this);
+        ElaCustomTabWidget* floatWidget = new ElaCustomTabWidget(q);
+        floatWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
         floatWidget->show();
         Q_EMIT q->pageOpenInNewWindow(nodeKey);
     }
 }
 
-void ElaNavigationBarPrivate::onNavigationRouteBack(QVariantMap routeData)
+void ElaNavigationBarPrivate::onNavigationRoute(QVariantMap routeData)
 {
     Q_Q(ElaNavigationBar);
-    QString pageKey = routeData.value("ElaPageKey").toString();
-    q->navigation(pageKey, false, true);
+    bool isRouteBack = routeData.value("ElaRouteBackMode").toBool();
+    QString pageKey = isRouteBack ? routeData.value("ElaBackPageKey").toString() : routeData.value("ElaForwardPageKey").toString();
+    q->navigation(pageKey, false, isRouteBack);
 }
 
 void ElaNavigationBarPrivate::onTreeViewClicked(const QModelIndex& index, bool isLogRoute, bool isRouteBack)
@@ -85,7 +84,7 @@ void ElaNavigationBarPrivate::onTreeViewClicked(const QModelIndex& index, bool i
         }
         if (node->getIsExpanderNode())
         {
-            _expandOrCollpaseExpanderNode(node, !_navigationView->isExpanded(index));
+            _expandOrCollapseExpanderNode(node, !_navigationView->isExpanded(index));
         }
         else
         {
@@ -101,20 +100,21 @@ void ElaNavigationBarPrivate::onTreeViewClicked(const QModelIndex& index, bool i
                 if (isLogRoute)
                 {
                     QVariantMap routeData = QVariantMap();
-                    QString pageKey;
+                    QString backPageKey;
                     if (selectedNode)
                     {
-                        pageKey.append(selectedNode->getNodeKey());
+                        backPageKey = selectedNode->getNodeKey();
                     }
                     else
                     {
                         if (_footerModel->getSelectedNode())
                         {
-                            pageKey.append(_footerModel->getSelectedNode()->getNodeKey());
+                            backPageKey = _footerModel->getSelectedNode()->getNodeKey();
                         }
                     }
-                    routeData.insert("ElaPageKey", pageKey);
-                    ElaNavigationRouter::getInstance()->navigationRoute(this, "onNavigationRouteBack", routeData);
+                    routeData.insert("ElaBackPageKey", backPageKey);
+                    routeData.insert("ElaForwardPageKey", node->getNodeKey());
+                    ElaNavigationRouter::getInstance()->navigationRoute(this, "onNavigationRoute", routeData);
                 }
                 Q_EMIT q->navigationNodeClicked(ElaNavigationType::PageNode, node->getNodeKey(), isRouteBack);
 
@@ -190,20 +190,21 @@ void ElaNavigationBarPrivate::onFooterViewClicked(const QModelIndex& index, bool
         if (isLogRoute && node->getIsHasFooterPage())
         {
             QVariantMap routeData = QVariantMap();
-            QString pageKey;
+            QString backPageKey;
             if (selectedNode)
             {
-                pageKey.append(selectedNode->getNodeKey());
+                backPageKey = selectedNode->getNodeKey();
             }
             else
             {
                 if (_navigationModel->getSelectedNode())
                 {
-                    pageKey.append(_navigationModel->getSelectedNode()->getNodeKey());
+                    backPageKey = _navigationModel->getSelectedNode()->getNodeKey();
                 }
             }
-            routeData.insert("ElaPageKey", pageKey);
-            ElaNavigationRouter::getInstance()->navigationRoute(this, "onNavigationRouteBack", routeData);
+            routeData.insert("ElaBackPageKey", backPageKey);
+            routeData.insert("ElaForwardPageKey", node->getNodeKey());
+            ElaNavigationRouter::getInstance()->navigationRoute(this, "onNavigationRoute", routeData);
         }
         Q_EMIT q->navigationNodeClicked(ElaNavigationType::FooterNode, node->getNodeKey(), isRouteBack);
 
@@ -230,6 +231,36 @@ void ElaNavigationBarPrivate::onFooterViewClicked(const QModelIndex& index, bool
             _footerModel->setSelectedNode(node);
         }
     }
+}
+
+bool ElaNavigationBarPrivate::eventFilter(QObject* watched, QEvent* event)
+{
+    switch (event->type())
+    {
+    case QEvent::Show:
+    {
+        QString nodeKey = watched->property("ElaPageKey").toString();
+        if (!nodeKey.isNull())
+        {
+            _pageNewWindowCountMap[nodeKey] += 1;
+        }
+        break;
+    }
+    case QEvent::HideToParent:
+    {
+        QString nodeKey = watched->property("ElaPageKey").toString();
+        if (!nodeKey.isNull())
+        {
+            _pageNewWindowCountMap[nodeKey] -= 1;
+        }
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void ElaNavigationBarPrivate::_initNodeModelIndex(const QModelIndex& parentIndex)
@@ -323,7 +354,7 @@ void ElaNavigationBarPrivate::_expandSelectedNodeParent()
     }
 }
 
-void ElaNavigationBarPrivate::_expandOrCollpaseExpanderNode(ElaNavigationNode* node, bool isExpand)
+void ElaNavigationBarPrivate::_expandOrCollapseExpanderNode(ElaNavigationNode* node, bool isExpand)
 {
     if (_currentDisplayMode == ElaNavigationType::Compact)
     {
@@ -372,7 +403,6 @@ void ElaNavigationBarPrivate::_addStackedPage(QWidget* page, QString pageKey)
     Q_EMIT q->navigationNodeAdded(ElaNavigationType::PageNode, pageKey, page);
     ElaNavigationNode* node = _navigationModel->getNavigationNode(pageKey);
     QVariantMap suggestData;
-    suggestData.insert("ElaNodeType", "Stacked");
     suggestData.insert("ElaPageKey", pageKey);
     QString suggestKey = _navigationSuggestBox->addSuggestion(node->getAwesome(), node->getNodeTitle(), suggestData);
     _suggestKeyMap.insert(pageKey, suggestKey);
@@ -389,7 +419,6 @@ void ElaNavigationBarPrivate::_addFooterPage(QWidget* page, QString footKey)
     _footerView->setFixedHeight(40 * _footerModel->getFooterNodeCount());
     ElaNavigationNode* node = _footerModel->getNavigationNode(footKey);
     QVariantMap suggestData;
-    suggestData.insert("ElaNodeType", "Footer");
     suggestData.insert("ElaPageKey", footKey);
     QString suggestKey = _navigationSuggestBox->addSuggestion(node->getAwesome(), node->getNodeTitle(), suggestData);
     _suggestKeyMap.insert(footKey, suggestKey);

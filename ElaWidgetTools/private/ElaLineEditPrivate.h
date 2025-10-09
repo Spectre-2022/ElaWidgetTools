@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "Def.h"
+#include "ElaDef.h"
 class ElaEvent;
 class ElaLineEdit;
 class ElaLineEditPrivate : public QObject
@@ -23,7 +23,6 @@ private:
     ElaThemeType::ThemeMode _themeMode;
     ElaEvent* _focusEvent{nullptr};
     qreal _textSpacing{0.5};
-    void _changeTheme();
 };
 
 #endif // ELALINEEDITPRIVATE_H

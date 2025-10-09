@@ -26,6 +26,8 @@ ElaSpinBox::ElaSpinBox(QWidget* parent)
 
 ElaSpinBox::~ElaSpinBox()
 {
+    Q_D(ElaSpinBox);
+    delete d->_style;
 }
 
 void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
@@ -103,6 +105,10 @@ void ElaSpinBox::focusOutEvent(QFocusEvent* event)
 void ElaSpinBox::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaSpinBox);
+    if (palette().color(QPalette::Text) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
     QSpinBox::paintEvent(event);
     QPainter painter(this);
     painter.save();

@@ -32,6 +32,10 @@ void ElaApplication::setWindowDisplayMode(ElaApplicationType::WindowDisplayMode 
     {
         return;
     }
+    if (lastDisplayMode == ElaApplicationType::ElaMica)
+    {
+        d->_resetAllMicaWidget();
+    }
     switch (windowDisplayType)
     {
     case ElaApplicationType::Normal:
@@ -94,6 +98,9 @@ void ElaApplication::init()
     font.setFamily("Microsoft YaHei");
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
+#ifdef Q_OS_WIN
+    eWinHelper->initWinAPI();
+#endif
 }
 
 void ElaApplication::syncWindowDisplayMode(QWidget* widget, bool isSync)
@@ -124,9 +131,6 @@ void ElaApplication::syncWindowDisplayMode(QWidget* widget, bool isSync)
             {
                 d->_updateMica(widget, false);
             }
-        }
-        else
-        {
         }
         break;
     }

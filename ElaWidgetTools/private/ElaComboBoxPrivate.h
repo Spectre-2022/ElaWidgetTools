@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "Def.h"
+#include "ElaDef.h"
 
 class QLineEdit;
 class ElaComboBox;
@@ -24,7 +24,6 @@ private:
     bool _isAllowHidePopup{false};
     ElaComboBoxStyle* _comboBoxStyle{nullptr};
     ElaThemeType::ThemeMode _themeMode;
-    void _changeTheme(QLineEdit* lineEdit);
 };
 
 #endif // ELACOMBOBOXPRIVATE_H

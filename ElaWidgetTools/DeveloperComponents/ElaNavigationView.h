@@ -1,7 +1,7 @@
 #ifndef ELANAVIGATIONVIEW_H
 #define ELANAVIGATIONVIEW_H
 
-#include "Def.h"
+#include "ElaDef.h"
 #include "ElaNavigationBarPrivate.h"
 #include <QObject>
 #include <QTreeView>
@@ -31,6 +31,7 @@ protected:
 private:
     ElaNavigationStyle* _navigationStyle{nullptr};
     ElaToolTip* _compactToolTip{nullptr};
+    void _doCompactToolTip();
 };
 
 #endif // ELANAVIGATIONVIEW_H

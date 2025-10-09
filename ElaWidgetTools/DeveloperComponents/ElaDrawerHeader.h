@@ -1,7 +1,7 @@
 #ifndef ELAFRAMEWORK_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELADRAWERHEADER_H_
 #define ELAFRAMEWORK_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELADRAWERHEADER_H_
 
-#include "Def.h"
+#include "ElaDef.h"
 #include <QVBoxLayout>
 #include <QWidget>
 class ElaDrawerHeader : public QWidget
@@ -15,7 +15,7 @@ public:
     ~ElaDrawerHeader() override;
 
     void setHeaderWidget(QWidget* widget);
-    void doExpandOrCollpaseAnimation();
+    void doExpandOrCollapseAnimation();
 Q_SIGNALS:
     Q_SIGNAL void drawerHeaderClicked(bool isExpand);
 

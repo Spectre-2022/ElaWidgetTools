@@ -42,6 +42,7 @@ ElaLineEdit::ElaLineEdit(QWidget* parent)
 
 ElaLineEdit::~ElaLineEdit()
 {
+    delete this->style();
 }
 
 void ElaLineEdit::setIsClearButtonEnable(bool isClearButtonEnable)
@@ -108,6 +109,10 @@ void ElaLineEdit::focusOutEvent(QFocusEvent* event)
 void ElaLineEdit::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaLineEdit);
+    if (palette().color(QPalette::Text) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
     QLineEdit::paintEvent(event);
     QPainter painter(this);
     painter.save();

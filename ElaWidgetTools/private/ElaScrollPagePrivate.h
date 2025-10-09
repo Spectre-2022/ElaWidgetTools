@@ -4,7 +4,7 @@
 #include <QMap>
 #include <QObject>
 
-#include "stdafx.h"
+#include "ElaProperty.h"
 class ElaScrollPage;
 class ElaScrollArea;
 class QHBoxLayout;
@@ -20,7 +20,7 @@ class ElaScrollPagePrivate : public QObject
 public:
     explicit ElaScrollPagePrivate(QObject* parent = nullptr);
     ~ElaScrollPagePrivate();
-    Q_INVOKABLE void onNavigationRouteBack(QVariantMap routeData);
+    Q_INVOKABLE void onNavigationRoute(QVariantMap routeData);
 
 private:
     QHBoxLayout* _pageTitleLayout{nullptr};

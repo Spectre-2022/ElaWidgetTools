@@ -1,7 +1,7 @@
 #ifndef ELAWIDGETTOOLS_ELALCDNUMBERPRIVATE_H
 #define ELAWIDGETTOOLS_ELALCDNUMBERPRIVATE_H
 
-#include "Def.h"
+#include "ElaDef.h"
 
 #include <QObject>
 class QTimer;
@@ -20,6 +20,7 @@ public:
     Q_SLOT void onThemeModeChanged(ElaThemeType::ThemeMode themeMode);
 
 private:
+    ElaThemeType::ThemeMode _themeMode;
     QTimer* _clockTimer{nullptr};
     ElaLCDNumberStyle* _lcdNumberStyle{nullptr};
 };

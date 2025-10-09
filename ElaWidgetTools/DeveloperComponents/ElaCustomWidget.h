@@ -3,8 +3,8 @@
 
 #include <QDialog>
 
-#include "Def.h"
 #include "ElaAppBar.h"
+#include "ElaDef.h"
 
 class QVBoxLayout;
 class ElaCustomWidget : public QDialog
@@ -16,9 +16,6 @@ public:
     ~ElaCustomWidget() override;
 
     void setCentralWidget(QWidget* widget);
-
-Q_SIGNALS:
-    Q_SIGNAL void customWidgetClosed();
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;

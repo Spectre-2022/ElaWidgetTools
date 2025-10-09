@@ -1,17 +1,16 @@
 #include "mainwindow.h"
 
-#include <QDebug>
-#include <QGraphicsView>
-#include <QHBoxLayout>
-
 #include "ElaContentDialog.h"
 #include "ElaDockWidget.h"
 #include "ElaEventBus.h"
 #include "ElaLog.h"
 #include "ElaMenu.h"
 #include "ElaMenuBar.h"
+#include "ElaNavigationRouter.h"
 #include "ElaProgressBar.h"
+#include "ElaProgressRing.h"
 #include "ElaStatusBar.h"
+#include "ElaSuggestBox.h"
 #include "ElaText.h"
 #include "ElaTheme.h"
 #include "ElaToolBar.h"
@@ -25,6 +24,9 @@
 #include "T_TableView.h"
 #include "T_TableView_Delegate.h"
 #include "T_TreeView.h"
+#include <QDebug>
+#include <QGraphicsView>
+#include <QHBoxLayout>
 #include <QMouseEvent>
 #ifdef Q_OS_WIN
 #include "ElaApplication.h"
@@ -63,12 +65,16 @@ MainWindow::MainWindow(QWidget* parent)
     });
 
     //移动到中心
-    moveToCenter();
+    //moveToCenter();
 
     //  如果你的windows版本低于Win11 调用原生Mica、Mica-Alt、Acrylic 会导致窗口绘制失效  Dwm_Blur仍可使用
     //    eTheme->setThemeMode(ElaThemeType::Dark);
     //    QTimer::singleShot(1, this, [=]() {
     //        eApp->setWindowDisplayMode(ElaApplicationType::Mica);
+    //    });
+
+    //    QTimer::singleShot(1, this, [=]() {
+    //        showFullScreen();
     //    });
 }
 
@@ -79,10 +85,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::initWindow()
 {
+    setFocusPolicy(Qt::StrongFocus);
     // setIsCentralStackedWidgetTransparent(true);
     setWindowIcon(QIcon(":/include/Image/Cirno.jpg"));
     resize(1200, 740);
-    // ElaLog::getInstance()->initMessageLog(true);
     // eTheme->setThemeMode(ElaThemeType::Dark);
     // setIsNavigationBarEnable(false);
     // setNavigationBarDisplayMode(ElaNavigationType::Compact);
@@ -95,11 +101,95 @@ void MainWindow::initWindow()
     // setUserInfoCardVisible(false);
     // setNavigationBarWidth(260);
     ElaText* centralStack = new ElaText("这是一个主窗口堆栈页面", this);
-    QFont font = centralStack->font();
-    font.setPixelSize(32);
-    centralStack->setFont(font);
+    centralStack->setFocusPolicy(Qt::StrongFocus);
+    centralStack->setTextPixelSize(32);
     centralStack->setAlignment(Qt::AlignCenter);
     addCentralWidget(centralStack);
+
+    // 自定义AppBar菜单
+    ElaMenu* appBarMenu = new ElaMenu(this);
+    appBarMenu->setMenuItemHeight(27);
+    connect(appBarMenu->addAction("跳转到一级主要堆栈"), &QAction::triggered, this, [=]() {
+        setCurrentStackIndex(0);
+    });
+    connect(appBarMenu->addAction("跳转到二级主要堆栈"), &QAction::triggered, this, [=]() {
+        setCurrentStackIndex(1);
+    });
+    connect(appBarMenu->addAction("更改页面切换特效(Scale)"), &QAction::triggered, this, [=]() {
+        setStackSwitchMode(ElaWindowType::StackSwitchMode::Scale);
+    });
+    connect(appBarMenu->addElaIconAction(ElaIconType::GearComplex, "自定义主窗口设置"), &QAction::triggered, this, [=]() {
+        navigation(_settingKey);
+    });
+    appBarMenu->addSeparator();
+    connect(appBarMenu->addElaIconAction(ElaIconType::MoonStars, "更改项目主题"), &QAction::triggered, this, [=]() {
+        eTheme->setThemeMode(eTheme->getThemeMode() == ElaThemeType::Light ? ElaThemeType::Dark : ElaThemeType::Light);
+    });
+    connect(appBarMenu->addAction("使用原生菜单"), &QAction::triggered, this, [=]() {
+        setCustomMenu(nullptr);
+    });
+    setCustomMenu(appBarMenu);
+
+    // 堆栈独立自定义窗口
+    QWidget* centralCustomWidget = new QWidget(this);
+    QHBoxLayout* centralCustomWidgetLayout = new QHBoxLayout(centralCustomWidget);
+    centralCustomWidgetLayout->setContentsMargins(13, 15, 9, 6);
+    ElaToolButton* leftButton = new ElaToolButton(this);
+    leftButton->setElaIcon(ElaIconType::AngleLeft);
+    leftButton->setEnabled(false);
+    connect(leftButton, &ElaToolButton::clicked, this, [=]() {
+        ElaNavigationRouter::getInstance()->navigationRouteBack();
+    });
+    ElaToolButton* rightButton = new ElaToolButton(this);
+    rightButton->setElaIcon(ElaIconType::AngleRight);
+    rightButton->setEnabled(false);
+    connect(rightButton, &ElaToolButton::clicked, this, [=]() {
+        ElaNavigationRouter::getInstance()->navigationRouteForward();
+    });
+    connect(ElaNavigationRouter::getInstance(), &ElaNavigationRouter::navigationRouterStateChanged, this, [=](ElaNavigationRouterType::RouteMode routeMode) {
+        switch (routeMode)
+        {
+        case ElaNavigationRouterType::BackValid:
+        {
+            leftButton->setEnabled(true);
+            break;
+        }
+        case ElaNavigationRouterType::BackInvalid:
+        {
+            leftButton->setEnabled(false);
+            break;
+        }
+        case ElaNavigationRouterType::ForwardValid:
+        {
+            rightButton->setEnabled(true);
+            break;
+        }
+        case ElaNavigationRouterType::ForwardInvalid:
+        {
+            rightButton->setEnabled(false);
+            break;
+        }
+        }
+    });
+    ElaSuggestBox* centralStackSuggest = new ElaSuggestBox(this);
+    centralStackSuggest->setFixedHeight(32);
+    centralStackSuggest->setPlaceholderText("搜索关键字");
+
+    ElaText* progressBusyRingText = new ElaText("系统运行中", this);
+    progressBusyRingText->setTextPixelSize(15);
+
+    ElaProgressRing* progressBusyRing = new ElaProgressRing(this);
+    progressBusyRing->setBusyingWidth(4);
+    progressBusyRing->setFixedSize(28, 28);
+    progressBusyRing->setIsBusying(true);
+
+    centralCustomWidgetLayout->addWidget(leftButton);
+    centralCustomWidgetLayout->addWidget(rightButton);
+    centralCustomWidgetLayout->addWidget(centralStackSuggest);
+    centralCustomWidgetLayout->addStretch();
+    centralCustomWidgetLayout->addWidget(progressBusyRingText);
+    centralCustomWidgetLayout->addWidget(progressBusyRing);
+    setCentralCustomWidget(centralCustomWidget);
 }
 
 void MainWindow::initEdgeLayout()
@@ -282,7 +372,6 @@ void MainWindow::initContent()
     connect(this, &ElaWindow::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey) {
         if (_aboutKey == nodeKey)
         {
-            _aboutPage->setFixedSize(400, 400);
             _aboutPage->moveToCenter();
             _aboutPage->show();
         }

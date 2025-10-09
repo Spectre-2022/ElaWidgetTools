@@ -1,10 +1,10 @@
 #ifndef ELANAVIGATIONROUTERPRIVATE_H
 #define ELANAVIGATIONROUTERPRIVATE_H
 #include <QObject>
-#include <QQueue>
 #include <QVariantMap>
+#include <QVector>
 
-#include "stdafx.h"
+#include "ElaProperty.h"
 class ElaNavigationRouter;
 class ElaNavigationRouterPrivate : public QObject
 {
@@ -16,7 +16,8 @@ public:
     ~ElaNavigationRouterPrivate() override;
 
 private:
-    QQueue<QVariantMap> _routeQueue;
+    int _currentIndex{-1};
+    QVector<QVariantMap> _routeList;
 };
 
 #endif // ELANAVIGATIONROUTERPRIVATE_H

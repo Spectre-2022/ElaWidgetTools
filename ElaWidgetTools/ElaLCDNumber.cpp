@@ -35,6 +35,8 @@ ElaLCDNumber::ElaLCDNumber(uint numDigits, QWidget* parent)
 
 ElaLCDNumber::~ElaLCDNumber()
 {
+    Q_D(ElaLCDNumber);
+    delete d->_lcdNumberStyle;
 }
 
 void ElaLCDNumber::setIsUseAutoClock(bool isUseAutoClock)
@@ -87,4 +89,14 @@ bool ElaLCDNumber::getIsTransparent() const
 {
     Q_D(const ElaLCDNumber);
     return d->_lcdNumberStyle->getIsTransparent();
+}
+
+void ElaLCDNumber::paintEvent(QPaintEvent* event)
+{
+    Q_D(ElaLCDNumber);
+    if (palette().color(QPalette::WindowText) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeModeChanged(d->_themeMode);
+    }
+    QLCDNumber::paintEvent(event);
 }
