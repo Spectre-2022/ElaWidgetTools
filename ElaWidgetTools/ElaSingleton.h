@@ -26,8 +26,6 @@ template <typename T> T* Singleton<T>::getInstance()
     return instance;
 }
 
-using ElaWidgetTools::Singleton;
-
 #define Q_SINGLETON_CREATE(Class)                                                                                                                              \
   private:                                                                                                                                                     \
     friend class Singleton<Class>;                                                                                                                             \
@@ -55,5 +53,6 @@ using ElaWidgetTools::Singleton;
     }
 
 }
+using ElaWidgetTools::Singleton;
 
 #endif // ELASINGLETON_H
