@@ -8,6 +8,7 @@ class ElaTabWidget;
 class ElaCustomTabWidget : public ElaCustomWidget
 {
     Q_OBJECT
+    Q_PROPERTY_CREATE(bool, IsFinished)
 public:
     explicit ElaCustomTabWidget(QWidget* parent = nullptr);
     ~ElaCustomTabWidget() override;
@@ -15,7 +16,10 @@ public:
     ElaTabBar* getCustomTabBar() const;
     ElaTabWidget* getCustomTabWidget() const;
 
+    Q_INVOKABLE bool processHitTest();
+
 private:
+    bool _isAllowLeave{false};
     ElaTabBar* _customTabBar{nullptr};
     ElaTabWidget* _customTabWidget{nullptr};
 };

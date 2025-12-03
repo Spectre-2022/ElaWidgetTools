@@ -65,15 +65,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::WidgetsPrivate
+)
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt${QT_VERSION_MAJOR}::Widgets
         D3D11
         DXGI
-    )
-else ()
-    target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt${QT_VERSION_MAJOR}::Widgets
     )
 endif ()
 

@@ -25,8 +25,8 @@ class MainWindow : public ElaWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget* parent = nullptr);
+    ~MainWindow() override;
 
     void initWindow();
     void initEdgeLayout();
@@ -37,6 +37,7 @@ protected:
 
 private:
     ElaContentDialog* _closeDialog{nullptr};
+    ElaSuggestBox* _windowSuggestBox{nullptr};
     T_Home* _homePage{nullptr};
 #ifdef Q_OS_WIN
     T_ElaScreen* _elaScreenPage{nullptr};

@@ -16,6 +16,7 @@
 #include <QScreen>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QWindow>
 
 ElaAppBarPrivate::ElaAppBarPrivate(QObject* parent)
     : QObject{parent}
@@ -61,12 +62,15 @@ void ElaAppBarPrivate::onStayTopButtonClicked()
     HWND hwnd = (HWND)_currentWinID;
     ::SetWindowPos(hwnd, _pIsStayTop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 #else
-    Q_Q(const ElaAppBar);
-    bool isVisible = q->window()->isVisible();
-    q->window()->setWindowFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
-    if (isVisible)
+    Q_Q(ElaAppBar);
+    if (q->window()->isVisible())
     {
-        q->window()->show();
+        q->window()->windowHandle()->setFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
+        q->window()->update();
+    }
+    else
+    {
+        q->window()->setWindowFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
     }
 #endif
     _stayTopButton->setIsSelected(_pIsStayTop);
@@ -190,9 +194,30 @@ bool ElaAppBarPrivate::_containsCursorToItem(QWidget* item)
     QRectF rect = QRectF(item->mapTo(item->window(), QPoint(0, 0)), item->size());
     if (item == q)
     {
-        if (_containsCursorToItem(_routeBackButton) || _containsCursorToItem(_routeForwardButton) || _containsCursorToItem(_navigationButton) || _containsCursorToItem(_pCustomWidget) || _containsCursorToItem(_stayTopButton) || _containsCursorToItem(_themeChangeButton) || _containsCursorToItem(_minButton) || _containsCursorToItem(_maxButton) || _containsCursorToItem(_closeButton))
+        for (int i = 0; i < _clientWidgetList.count(); i++)
         {
-            return false;
+            if (_containsCursorToItem(_clientWidgetList[i]))
+            {
+                return false;
+            }
+        }
+        for (int i = 0; i < _customAreaWidgetList.count(); i++)
+        {
+            QWidget* customAreaWidget = _customAreaWidgetList[i];
+            if (_containsCursorToItem(customAreaWidget))
+            {
+                QObject* customAreaHitTestObject = _customAreaHitTestObjectList[i];
+                if (customAreaHitTestObject)
+                {
+                    bool isContainsInAppBar = false;
+                    QMetaObject::invokeMethod(customAreaHitTestObject, _customAreaHitTestFunctionNameList[i].toLocal8Bit().constData(), Qt::AutoConnection, Q_RETURN_ARG(bool, isContainsInAppBar));
+                    return isContainsInAppBar;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
     else if (item == _maxButton)
@@ -242,21 +267,24 @@ int ElaAppBarPrivate::_calculateMinimumWidth()
     {
         width += 5;
     }
-    if (_pCustomWidget)
+
+    int customWidgetWidth = 0;
+    for (int i = 0; i < _customAreaWidgetList.count(); i++)
     {
-        int customWidgetWidth = _pCustomWidget->width();
-        if (isHasNavigationBar)
+        customWidgetWidth += _customAreaWidgetList[i]->minimumWidth();
+    }
+    if (isHasNavigationBar)
+    {
+        if (customWidgetWidth > 300)
         {
-            if (customWidgetWidth > 300)
-            {
-                width += customWidgetWidth - 300;
-            }
-        }
-        else
-        {
-            width += customWidgetWidth;
+            width += customWidgetWidth - 300;
         }
     }
+    else
+    {
+        width += customWidgetWidth;
+    }
+
     QList<QAbstractButton*> buttonList = q->findChildren<QAbstractButton*>();
     for (auto button: buttonList)
     {
