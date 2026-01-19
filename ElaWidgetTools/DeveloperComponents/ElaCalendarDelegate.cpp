@@ -130,12 +130,7 @@ void ElaCalendarDelegate::_drawDays(QPainter* painter, const QStyleOptionViewIte
         ElaCalendarData data = variant.value<ElaCalendarData>();
         // 当前日期绘制
         if (0 != _Month and data.month != _Month) {
-            painter->save();
-            // painter->setPen(Qt::NoPen);
-            // painter->setBrush(Qt::gray);
             painter->setOpacity(0.3);
-            // painter->drawRect(option.rect);
-            // painter->restore();
         }
         if (data.year == _nowDate.year() && data.month == _nowDate.month() && data.day == _nowDate.day())
         {
