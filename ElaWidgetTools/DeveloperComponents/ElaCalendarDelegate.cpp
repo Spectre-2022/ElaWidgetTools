@@ -12,6 +12,7 @@ ElaCalendarDelegate::ElaCalendarDelegate(ElaCalendarModel* calendarModel, QObjec
     _calendarModel = calendarModel;
     _pItemWidth = 42;
     _pItemHeight = 42;
+    _Month = 0;
     _nowDate = QDate::currentDate();
     _themeMode = eTheme->getThemeMode();
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
@@ -128,6 +129,14 @@ void ElaCalendarDelegate::_drawDays(QPainter* painter, const QStyleOptionViewIte
         bool isNow = false;
         ElaCalendarData data = variant.value<ElaCalendarData>();
         // 当前日期绘制
+        if (0 != _Month and data.month != _Month) {
+            painter->save();
+            // painter->setPen(Qt::NoPen);
+            // painter->setBrush(Qt::gray);
+            painter->setOpacity(0.3);
+            // painter->drawRect(option.rect);
+            // painter->restore();
+        }
         if (data.year == _nowDate.year() && data.month == _nowDate.month() && data.day == _nowDate.day())
         {
             isNow = true;

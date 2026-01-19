@@ -217,6 +217,7 @@ void ElaCalendarPrivate::_updateSwitchButtonText()
         return;
     }
     ElaCalendarData data = _calendarModel->data(modelIndex, Qt::UserRole).value<ElaCalendarData>();
+    _calendarDelegate->setShowMonth(data.month);
     switch (_calendarModel->getDisplayMode())
     {
     case YearMode:

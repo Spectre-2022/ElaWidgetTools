@@ -16,6 +16,8 @@ public:
     explicit ElaCalendarDelegate(ElaCalendarModel* calendarModel, QObject* parent = nullptr);
     ~ElaCalendarDelegate();
 
+    void setShowMonth(int month) { _Month = month; }
+
     Q_SLOT void onCalendarModelDisplayModeChanged();
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
@@ -25,6 +27,7 @@ private:
     ElaCalendarModel* _calendarModel{nullptr};
     ElaThemeType::ThemeMode _themeMode;
     QDate _nowDate;
+    int _Month;
     void _drawYearOrMonth(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void _drawDays(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 };
